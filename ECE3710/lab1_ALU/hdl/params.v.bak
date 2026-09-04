@@ -1,0 +1,22 @@
+// params.v
+
+parameter ADD = 
+parameter ADDI =
+parameter ADDU = 
+parameter ADDUI =
+parameter ADDC = 
+parameter ADDCU =
+parameter ADDCUI =
+parameter SUB =  
+parameter SUBI = 
+parameter CMP =
+parameter CMPI = 
+parameter CMPU =
+parameter AND = 
+parameter OR = 
+parameter XOR = 
+parameter NOT =
+parameter LSH =
+parameter LSHI =
+parameter ALSH =
+parameter WAIT =

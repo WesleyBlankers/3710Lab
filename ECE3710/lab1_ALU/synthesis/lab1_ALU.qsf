@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY lab1_ALU
+set_global_assignment -name TOP_LEVEL_ENTITY top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 24.1STD.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:44:27  SEPTEMBER 02, 2026"
 set_global_assignment -name LAST_QUARTUS_VERSION "24.1std.0 Lite Edition"
@@ -62,5 +62,10 @@ set_global_assignment -name EDA_TEST_BENCH_NAME alu_tb -section_id eda_simulatio
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id alu_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_tb -section_id alu_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE ../simulation/alu_tb.v -section_id alu_tb
+set_global_assignment -name VERILOG_FILE ../simulation/tb_HexTo7Seg.v
+set_global_assignment -name VERILOG_FILE ../hdl/HexTo7Seg.v
+set_global_assignment -name VERILOG_FILE ../hdl/alu_sample_code.v
+set_global_assignment -name VERILOG_FILE ../hdl/params.v
 set_global_assignment -name VERILOG_FILE ../simulation/alu_tb.v
 set_global_assignment -name VERILOG_FILE ../hdl/alu.v
+set_global_assignment -name VERILOG_FILE ../hdl/top.v
