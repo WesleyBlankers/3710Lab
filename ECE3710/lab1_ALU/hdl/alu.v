@@ -36,51 +36,111 @@ module alu (
             // ADDITION
             // =================================================
 
-            ADD: begin
-                // Implement ADD
+            ADD, ADDI: begin
+                C = A + B;
+					 
+					//Zero Flag
+					 if (C == 16'b0)
+						Flags[1] = 1'b1;
+					 else
+						Flags[1] = 1'b0; 
+						
+					//Signed Overflow Flag
+					 if ((~A[15] & ~B[15] & C[15]) | (A[15] & B[15] &~C[15]))
+						Flags[2] = 1'b1;
+					 else
+						Flags[2] = 1'b0;
+						
+				   //Reset other Flags
+					  Flags[4] = 1'b0;
+					  Flags[3] = 1'b0;
+					  Flags[0] = 1'b0;
+					 
             end
 
-            ADDI: begin
-                // Implement ADDI
+
+            ADDU, ADDUI: begin
+                {Flags[4], C} = A + B;
+					 
+					//Zero Flag
+						if (C == 16'b0)
+							Flags[1] = 1'b1;
+						else
+							Flags[1] = 1'b0;
+						
+					//Reset Other Flags
+					  Flags[3] = 1'b0;
+					  Flags[2] = 1'b0;
+					  Flags[0] = 1'b0;
+						
             end
 
-            ADDU: begin
-                // Implement ADDU
+
+            ADDC, ADDCI: begin
+               C = A + B + Cin;
+					
+					//Zero Flag
+						if (C == 16'b0)
+							Flags[1] = 1'b1;
+						else
+							Flags[1] = 1'b0;
+							
+					//Signed Overflow Flag
+						if (( ~A[15] & ~B[15] & C[15]) | (A[15] & B[15] & ~C[15]))
+							Flags[2] = 1'b1;
+						else
+							Flags[2] = 1'b0;
+					
+					//Reset Other Flags
+					  Flags[4] = 1'b0;
+					  Flags[3] = 1'b0;
+					  Flags[0] = 1'b0;
+						
+					
             end
 
-            ADDUI: begin
-                // Implement ADDUI
+            ADDCU, ADDCUI: begin
+					{Flags[4], C} = A + B + Cin;
+				
+					if (C == 16'b0)
+						Flags[1] = 1'b1;
+					else 
+						Flags[1] = 1'b0;
+						
+					//Reset Other Flags
+					  Flags[3] = 1'b0;
+					  Flags[2] = 1'b0;
+					  Flags[0] = 1'b0;
+               
             end
 
-            ADDC: begin
-                // Implement ADDC
-            end
 
-            ADDCU: begin
-                // Implement ADDCU
-            end
 
-            ADDCUI: begin
-                // Implement ADDCUI
-            end
-
-            ADDCI: begin
-                // Implement ADDCI
-            end
 
 
             // =================================================
             // SUBTRACTION
             // =================================================
 
-            SUB: begin
-                // Implement SUB
+            SUB, SUBI: begin
+                C = A - B;
+					 
+					//Zero Flag
+					if (C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
+						
+					//Overflow Flag
+					if ((A[15] ^ B[15]) & (A[15] ^ C[15]))
+						Flags[2] = 1'b1;
+					else
+						Flags[2] = 1'b0;
+						
+					//Reset Other Flags
+					Flags[3] = 1'b0;
+					Flags[0] = 1'b0;
             end
-
-            SUBI: begin
-                // Implement SUBI
-            end
-
 
             // =================================================
             // COMPARISON
