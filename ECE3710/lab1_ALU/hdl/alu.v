@@ -147,15 +147,18 @@ module alu (
             // =================================================
 
             CMP: begin
-                // Implement CMP
+					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
+					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
             CMPI: begin
-                // Implement CMPI
+					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
+					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
             CMPUI: begin
-                // Implement CMPUI
+               Flags[0] = A < B; // Set Less than flag
+					Flags[1] = A == B // Set equal flag
             end
 
 
@@ -185,7 +188,7 @@ module alu (
             // =================================================
 
             LSH: begin
-                // Implement LSH
+                A  =
             end
 
             LSHI: begin
