@@ -124,7 +124,7 @@ module alu (
             end
 
             CMPI: begin
-					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
+					Flags[0] = $signed(A) < $signed(B); //Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
@@ -137,20 +137,45 @@ module alu (
             // LOGICAL OPERATIONS
             // =================================================
 
-            AND: begin
-                // Implement AND
+            AND, ANDI: begin
+					C = A & B;
+					
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
             end
 
-            OR: begin
-                // Implement OR
+            OR, ORI: begin
+                C = A | B;
+									
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
+					 
             end
 
-            XOR: begin
-                // Implement XOR
+            XOR, XORI: begin
+                C = A ^ B;
+					 
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
             end
 
             NOT: begin
-                // Implement NOT
+					 C = ~A;
+					
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
             end
 
             // =================================================
