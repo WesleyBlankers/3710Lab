@@ -50,11 +50,6 @@ module alu (
 						Flags[2] = 1'b1;
 					 else
 						Flags[2] = 1'b0;
-						
-				   //Reset other Flags
-					  Flags[4] = 1'b0;
-					  Flags[3] = 1'b0;
-					  Flags[0] = 1'b0;
 					 
             end
 
@@ -67,14 +62,7 @@ module alu (
 							Flags[1] = 1'b1;
 						else
 							Flags[1] = 1'b0;
-						
-					//Reset Other Flags
-					  Flags[3] = 1'b0;
-					  Flags[2] = 1'b0;
-					  Flags[0] = 1'b0;
-						
             end
-
 
             ADDC, ADDCI: begin
                C = A + B + Cin;
@@ -91,12 +79,6 @@ module alu (
 						else
 							Flags[2] = 1'b0;
 					
-					//Reset Other Flags
-					  Flags[4] = 1'b0;
-					  Flags[3] = 1'b0;
-					  Flags[0] = 1'b0;
-						
-					
             end
 
             ADDCU, ADDCUI: begin
@@ -106,17 +88,7 @@ module alu (
 						Flags[1] = 1'b1;
 					else 
 						Flags[1] = 1'b0;
-						
-					//Reset Other Flags
-					  Flags[3] = 1'b0;
-					  Flags[2] = 1'b0;
-					  Flags[0] = 1'b0;
-               
             end
-
-
-
-
 
             // =================================================
             // SUBTRACTION
@@ -161,7 +133,6 @@ module alu (
 					Flags[1] = A == B // Set equal flag
             end
 
-
             // =================================================
             // LOGICAL OPERATIONS
             // =================================================
@@ -182,36 +153,35 @@ module alu (
                 // Implement NOT
             end
 
-
             // =================================================
             // SHIFT OPERATIONS
             // =================================================
 
-            LSH: begin
-                A  =
+            LSH, LSHI: begin
+                if ($signed(B) < 0)
+						A = A >> (-$signed(B));
+					 else
+					   A = A << B;
             end
 
-            LSHI: begin
-                // Implement LSHI
+            ASHU: begin
+                if ($signed(B) < 0)
+						A = $signed(A) >>> (-$signed(B));
+					 else
+						A = $signed(A) <<< $signed(B);
             end
-
-            ALSH: begin
-                // Implement ALSH
-            end
-
 
             // =================================================
             // NO OPERATION
             // =================================================
 
             NOP: begin
-                // Implement NOP
+                // Do literally nothing.
             end
 
             WAIT: begin
-                // Implement WAIT
+                // Do literally nothing.
             end
-
 
             // =================================================
             // DEFAULT
