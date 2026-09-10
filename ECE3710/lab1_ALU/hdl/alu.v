@@ -136,7 +136,7 @@ module alu (
             CMPUI: begin
 					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
-					Flags[1] = A == B // Set equal flag
+					Flags[1] = A == B; // Set equal flag
             end
 
             // =================================================

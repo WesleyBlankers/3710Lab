@@ -1,4 +1,4 @@
-```verilog
+//```verilog
 module top (
     input        CLOCK_50,
     input  [9:0]  SW,
@@ -377,4 +377,4 @@ module top (
 
 
 endmodule
-```
+//```

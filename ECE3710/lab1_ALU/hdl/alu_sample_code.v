@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+/*`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -78,7 +78,7 @@ begin
 		
 		// C = ?? if I don;t specify, then I'm in trouble.
 		C = 4'b0000;
-		*/
+		
 		end
 	default: 
 		begin
@@ -86,6 +86,8 @@ begin
 			Flags = 5'b00000;
 		end
 	endcase
+	
 end
 
 endmodule
+*/
