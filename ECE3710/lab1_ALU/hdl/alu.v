@@ -9,6 +9,8 @@ module alu (
     Flags
 );
 
+	 // Rdest is A
+	 // Rsrc or Imm is B
     input  [15:0] A, B;
     input         Cin;
     input  [7:0]  Opcode;
@@ -23,6 +25,8 @@ module alu (
     // Flags[1] = Z (Zero)
     // Flags[0] = N (Negative / less-than signed)
 
+	 
+	 
 
     always @(A, B, Opcode) begin
 
@@ -52,7 +56,6 @@ module alu (
 						Flags[2] = 1'b0;
 					 
             end
-
 
             ADDU, ADDUI: begin
                 {Flags[4], C} = A + B;
@@ -119,16 +122,19 @@ module alu (
             // =================================================
 
             CMP: begin
+					Flags[3] = A < B; // Set Low flag
 					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
             CMPI: begin
+					Flags[3] = A < B; // Set Low flag
 					Flags[0] = $signed(A) < $signed(B); //Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
             CMPUI: begin
+					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
 					Flags[1] = A == B // Set equal flag
             end

@@ -40,7 +40,9 @@ parameter SUBCI = 8'b1010_XXXX;
 parameter MUL   = 8'b0000_1110; 
 parameter MULI  = 8'b1110_XXXX; 
 parameter CMP   = 8'b0000_1011; 
-parameter CMPI  = 8'b1011_XXXX; 
+parameter CMPI  = 8'b1011_XXXX;
+parameter CMPUI = 8'b0000_1000; // This is an unused OPCODE, do not repeat implementation.
+
 
 // Logical Instructions
 parameter AND   = 8'b0000_0001; 
@@ -49,6 +51,7 @@ parameter OR    = 8'b0000_0010;
 parameter ORI   = 8'b0010_XXXX; 
 parameter XOR   = 8'b0000_0011; 
 parameter XORI  = 8'b0011_XXXX; 
+parameter NOT	 = 8'b0000_0100; // This is an unused OPCODE, do not repeat implementation.
 
 // Move & Immediate Load
 parameter MOV   = 8'b0000_1101; 
