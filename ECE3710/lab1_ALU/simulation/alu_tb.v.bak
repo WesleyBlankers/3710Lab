@@ -43,10 +43,9 @@ module alutest;
 		.Flags(Flags)
 	);
 
-	integer i;
-
 	initial begin
-//			$monitor("A: %0d, B: %0d, C: %0d, Flags[1:0]: %b, time:%0d", A, B, C, Flags[1:0], $time );
+//			$monitor("A: %0d, B: %0d, C: %0d, Flags[1:0]:
+%b, time:%0d", A, B, C, Flags[1:0], $time );
 //Instead of the $display stmt in the loop, you could use just this
 //monitor statement which is executed everytime there is an event on any
 //signal in the argument list.

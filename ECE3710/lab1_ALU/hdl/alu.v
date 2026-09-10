@@ -1,5 +1,3 @@
-`include "params.v"
-
 module alu (
     A,
     B,
@@ -8,6 +6,8 @@ module alu (
     C,
     Flags
 );
+
+	`include "params.sv"
 
 	 // Rdest is A
 	 // Rsrc or Imm is B
@@ -84,15 +84,6 @@ module alu (
 					
             end
 
-            ADDCU, ADDCUI: begin
-					{Flags[4], C} = A + B + Cin;
-				
-					if (C == 16'b0)
-						Flags[1] = 1'b1;
-					else 
-						Flags[1] = 1'b0;
-            end
-
             // =================================================
             // SUBTRACTION
             // =================================================
@@ -136,7 +127,7 @@ module alu (
             CMPUI: begin
 					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
-					Flags[1] = A == B // Set equal flag
+					Flags[1] = A == B; // Set equal flag
             end
 
             // =================================================
@@ -190,16 +181,16 @@ module alu (
 
             LSH, LSHI: begin
                 if ($signed(B) < 0)
-						A = A >> (-$signed(B));
+						C = A >> (-$signed(B));
 					 else
-					   A = A << B;
+					   C = A << B;
             end
 
             ASHU: begin
                 if ($signed(B) < 0)
-						A = $signed(A) >>> (-$signed(B));
+						C = $signed(A) >>> (-$signed(B));
 					 else
-						A = $signed(A) <<< $signed(B);
+						C = $signed(A) <<< $signed(B);
             end
 
             // =================================================
