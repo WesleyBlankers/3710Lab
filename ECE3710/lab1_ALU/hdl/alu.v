@@ -40,7 +40,7 @@ module alu (
             // ADDITION
             // =================================================
 
-            ADD, ADDI: begin
+            `ADD, `ADDI: begin
                 C = A + B;
 					 
 					//Zero Flag
@@ -57,7 +57,7 @@ module alu (
 					 
             end
 
-            ADDU, ADDUI: begin
+            `ADDU, `ADDUI: begin
                 {Flags[4], C} = A + B;
 					 
 					//Zero Flag
@@ -67,7 +67,7 @@ module alu (
 							Flags[1] = 1'b0;
             end
 
-            ADDC, ADDCI: begin
+            `ADDC, `ADDCI: begin
                C = A + B + Cin;
 					
 					//Zero Flag
@@ -84,20 +84,20 @@ module alu (
 					
             end
 
-            ADDCU, ADDCUI: begin
+            /*`ADDCU, `ADDCUI: begin
 					{Flags[4], C} = A + B + Cin;
 				
 					if (C == 16'b0)
 						Flags[1] = 1'b1;
 					else 
 						Flags[1] = 1'b0;
-            end
+            en*/
 
             // =================================================
             // SUBTRACTION
             // =================================================
 
-            SUB, SUBI: begin
+            `SUB, `SUBI: begin
                 C = A - B;
 					 
 					//Zero Flag
@@ -121,19 +121,19 @@ module alu (
             // COMPARISON
             // =================================================
 
-            CMP: begin
+            `CMP: begin
 					Flags[3] = A < B; // Set Low flag
 					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
-            CMPI: begin
+            `CMPI: begin
 					Flags[3] = A < B; // Set Low flag
 					Flags[0] = $signed(A) < $signed(B); //Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
 
-            CMPUI: begin
+            `CMPUI: begin
 					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
 					Flags[1] = A == B; // Set equal flag
@@ -143,7 +143,7 @@ module alu (
             // LOGICAL OPERATIONS
             // =================================================
 
-            AND, ANDI: begin
+            `AND, `ANDI: begin
 					C = A & B;
 					
 					//Zero Flag
@@ -153,7 +153,7 @@ module alu (
 						Flags[1] = 1'b0;
             end
 
-            OR, ORI: begin
+            `OR, `ORI: begin
                 C = A | B;
 									
 					//Zero Flag
@@ -164,7 +164,7 @@ module alu (
 					 
             end
 
-            XOR, XORI: begin
+            `XOR, `XORI: begin
                 C = A ^ B;
 					 
 					//Zero Flag
@@ -174,7 +174,7 @@ module alu (
 						Flags[1] = 1'b0;
             end
 
-            NOT: begin
+            `NOT: begin
 					 C = ~A;
 					
 					//Zero Flag
@@ -188,31 +188,32 @@ module alu (
             // SHIFT OPERATIONS
             // =================================================
 
-            LSH, LSHI: begin
+            `LSH, `LSHI: begin
                 if ($signed(B) < 0)
-						A = A >> (-$signed(B));
+						C = A >> (-$signed(B));
 					 else
-					   A = A << B;
+					   C = A << B;
             end
 
-            ASHU: begin
+            `ASHU: begin
                 if ($signed(B) < 0)
-						A = $signed(A) >>> (-$signed(B));
+						C = $signed(A) >>> (-$signed(B));
 					 else
-						A = $signed(A) <<< $signed(B);
+						C = $signed(A) <<< $signed(B);
             end
 
             // =================================================
             // NO OPERATION
             // =================================================
 
-            NOP: begin
+          /*  `NOP: begin
                 // Do literally nothing.
             end
 
-            WAIT: begin
+            `WAIT: begin
                 // Do literally nothing.
             end
+				*/
 
             // =================================================
             // DEFAULT
