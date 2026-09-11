@@ -164,7 +164,15 @@
 					"strict" : false
 				},
 				{
-					"name" : "KEY[1]",
+					"name" : "SW[8]",
+					"strict" : false
+				},
+				{
+					"name" : "SW[9]",
+					"strict" : false
+				},
+				{
+					"name" : "KEY[2]",
 					"strict" : false
 				},
 				{
@@ -172,7 +180,7 @@
 					"strict" : false
 				},
 				{
-					"name" : "KEY[2]",
+					"name" : "KEY[1]",
 					"strict" : false
 				},
 				{
@@ -181,14 +189,6 @@
 				},
 				{
 					"name" : "CLOCK_50",
-					"strict" : false
-				},
-				{
-					"name" : "SW[8]",
-					"strict" : false
-				},
-				{
-					"name" : "SW[9]",
 					"strict" : false
 				},
 				{

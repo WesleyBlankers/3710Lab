@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 
 
 `timescale 1ns / 1ps
+=======
+/*`timescale 1ns / 1ps
+>>>>>>> c976175e6191fa2ca650c8820f3359fb3b14b395
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -80,7 +84,7 @@ begin
 		
 		// C = ?? if I don;t specify, then I'm in trouble.
 		C = 4'b0000;
-		*/
+		
 		end
 	default: 
 		begin
@@ -88,6 +92,8 @@ begin
 			Flags = 5'b00000;
 		end
 	endcase
+	
 end
 
 endmodule
+*/

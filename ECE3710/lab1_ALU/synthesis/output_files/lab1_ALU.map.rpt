@@ -1,5 +1,5 @@
 Analysis & Synthesis report for lab1_ALU
-Thu Sep 10 14:18:41 2026
+Thu Sep 10 16:32:49 2026
 Quartus Prime Version 25.1std.0 Build 1129 10/21/2025 SC Standard Edition
 
 
@@ -45,7 +45,7 @@ on the Quartus Prime software download page.
 +---------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                          ;
 +---------------------------------+-----------------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Thu Sep 10 14:18:41 2026               ;
+; Analysis & Synthesis Status     ; Successful - Thu Sep 10 16:32:49 2026               ;
 ; Quartus Prime Version           ; 25.1std.0 Build 1129 10/21/2025 SC Standard Edition ;
 ; Revision Name                   ; lab1_ALU                                            ;
 ; Top-level Entity Name           ; top                                                 ;
@@ -180,31 +180,31 @@ on the Quartus Prime software download page.
 +----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------+---------+
 
 
-+------------------------------------------------------------+
-; Analysis & Synthesis Resource Usage Summary                ;
-+---------------------------------------------+--------------+
-; Resource                                    ; Usage        ;
-+---------------------------------------------+--------------+
-; Estimate of Logic utilization (ALMs needed) ; 351          ;
-;                                             ;              ;
-; Combinational ALUT usage for logic          ; 511          ;
-;     -- 7 input functions                    ; 13           ;
-;     -- 6 input functions                    ; 173          ;
-;     -- 5 input functions                    ; 116          ;
-;     -- 4 input functions                    ; 110          ;
-;     -- <=3 input functions                  ; 99           ;
-;                                             ;              ;
-; Dedicated logic registers                   ; 40           ;
-;                                             ;              ;
-; I/O pins                                    ; 57           ;
-;                                             ;              ;
-; Total DSP Blocks                            ; 0            ;
-;                                             ;              ;
-; Maximum fan-out node                        ; KEY[2]~input ;
-; Maximum fan-out                             ; 42           ;
-; Total fan-out                               ; 2620         ;
-; Average fan-out                             ; 3.94         ;
-+---------------------------------------------+--------------+
++---------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary             ;
++---------------------------------------------+-----------+
+; Resource                                    ; Usage     ;
++---------------------------------------------+-----------+
+; Estimate of Logic utilization (ALMs needed) ; 339       ;
+;                                             ;           ;
+; Combinational ALUT usage for logic          ; 493       ;
+;     -- 7 input functions                    ; 23        ;
+;     -- 6 input functions                    ; 157       ;
+;     -- 5 input functions                    ; 113       ;
+;     -- 4 input functions                    ; 112       ;
+;     -- <=3 input functions                  ; 88        ;
+;                                             ;           ;
+; Dedicated logic registers                   ; 40        ;
+;                                             ;           ;
+; I/O pins                                    ; 57        ;
+;                                             ;           ;
+; Total DSP Blocks                            ; 0         ;
+;                                             ;           ;
+; Maximum fan-out node                        ; B_reg[15] ;
+; Maximum fan-out                             ; 52        ;
+; Total fan-out                               ; 2557      ;
+; Average fan-out                             ; 3.95      ;
++---------------------------------------------+-----------+
 
 
 +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -212,13 +212,13 @@ on the Quartus Prime software download page.
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
 ; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name ; Entity Name ; Library Name ;
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
-; |top                       ; 511 (265)           ; 40 (40)                   ; 0                 ; 0          ; 57   ; 0            ; |top                ; top         ; work         ;
+; |top                       ; 493 (227)           ; 40 (40)                   ; 0                 ; 0          ; 57   ; 0            ; |top                ; top         ; work         ;
 ;    |HexTo7Seg:H0|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H0   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H1|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H1   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H2|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H2   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H3|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H3   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H4|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H4   ; HexTo7Seg   ; work         ;
-;    |alu:ALU|               ; 211 (211)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|alu:ALU        ; alu         ; work         ;
+;    |alu:ALU|               ; 231 (231)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|alu:ALU        ; alu         ; work         ;
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -244,15 +244,25 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
 ; 4:1                ; 9 bits    ; 18 LEs        ; 18 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
-; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftRight1   ;
+; 4:1                ; 11 bits   ; 22 LEs        ; 22 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftRight1   ;
+; 3:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
 ; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |top|comb                  ;
 ; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |top|comb                  ;
 ; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |top|comb                  ;
 ; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |top|comb                  ;
-; 269:1              ; 2 bits    ; 358 LEs       ; 42 LEs               ; 316 LEs                ; No         ; |top|Display_Value[9]      ;
-; 271:1              ; 2 bits    ; 360 LEs       ; 42 LEs               ; 318 LEs                ; No         ; |top|Display_Value[6]      ;
-; 270:1              ; 2 bits    ; 360 LEs       ; 44 LEs               ; 316 LEs                ; No         ; |top|Display_Value[13]     ;
-; 271:1              ; 2 bits    ; 360 LEs       ; 44 LEs               ; 316 LEs                ; No         ; |top|Display_Value[1]      ;
+; 5:1                ; 4 bits    ; 12 LEs        ; 8 LEs                ; 4 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
+; 5:1                ; 4 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
+; 4:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 4:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 5:1                ; 3 bits    ; 9 LEs         ; 9 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 5:1                ; 3 bits    ; 9 LEs         ; 6 LEs                ; 3 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 6:1                ; 4 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 6:1                ; 3 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 6:1                ; 4 bits    ; 16 LEs        ; 12 LEs               ; 4 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
+; 8:1                ; 4 bits    ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
+; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[10]     ;
+; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[4]      ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
 
 
@@ -272,27 +282,28 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------+-----------------------------+
 ; arriav_ff             ; 40                          ;
 ;     ENA               ; 40                          ;
-; arriav_lcell_comb     ; 522                         ;
+; arriav_lcell_comb     ; 504                         ;
 ;     arith             ; 33                          ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 16                          ;
 ;         2 data inputs ; 16                          ;
-;     extend            ; 13                          ;
-;         7 data inputs ; 13                          ;
-;     normal            ; 460                         ;
+;     extend            ; 23                          ;
+;         7 data inputs ; 23                          ;
+;     normal            ; 431                         ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 10                          ;
-;         2 data inputs ; 21                          ;
-;         3 data inputs ; 29                          ;
-;         4 data inputs ; 110                         ;
-;         5 data inputs ; 116                         ;
-;         6 data inputs ; 173                         ;
-;     shared            ; 16                          ;
+;         2 data inputs ; 16                          ;
+;         3 data inputs ; 22                          ;
+;         4 data inputs ; 112                         ;
+;         5 data inputs ; 113                         ;
+;         6 data inputs ; 157                         ;
+;     shared            ; 17                          ;
+;         0 data inputs ; 1                           ;
 ;         2 data inputs ; 16                          ;
 ; boundary_port         ; 57                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 17.70                       ;
-; Average LUT depth     ; 14.58                       ;
+; Max LUT depth         ; 16.40                       ;
+; Average LUT depth     ; 13.87                       ;
 +-----------------------+-----------------------------+
 
 
@@ -301,7 +312,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:12     ;
+; Top            ; 00:00:02     ;
 +----------------+--------------+
 
 
@@ -311,7 +322,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 25.1std.0 Build 1129 10/21/2025 SC Standard Edition
-    Info: Processing started: Thu Sep 10 14:18:18 2026
+    Info: Processing started: Thu Sep 10 16:32:40 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off lab1_ALU -c lab1_ALU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
@@ -321,23 +332,23 @@ Info (12021): Found 1 design units, including 1 entities, in source file /users/
 Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/hexto7seg.v
     Info (12023): Found entity 1: HexTo7Seg File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v Line: 5
 Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/simulation/alu_tb.v
-    Info (12023): Found entity 1: alutest File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/alu_tb.v Line: 25
+    Info (12023): Found entity 1: alutest File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/alu_tb.v Line: 26
 Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/alu.v
     Info (12023): Found entity 1: alu File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 1
 Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/top.v
     Info (12023): Found entity 1: top File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 1
 Info (12127): Elaborating entity "top" for the top level hierarchy
 Warning (10036): Verilog HDL or VHDL warning at top.v(167): object "Display_Flags" assigned a value but never read File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 167
-Warning (10230): Verilog HDL assignment warning at top.v(256): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 256
-Warning (10230): Verilog HDL assignment warning at top.v(259): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 259
-Warning (10230): Verilog HDL assignment warning at top.v(262): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 262
-Warning (10230): Verilog HDL assignment warning at top.v(265): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 265
+Warning (10230): Verilog HDL assignment warning at top.v(268): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 268
+Warning (10230): Verilog HDL assignment warning at top.v(271): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 271
+Warning (10230): Verilog HDL assignment warning at top.v(274): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 274
+Warning (10230): Verilog HDL assignment warning at top.v(277): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 277
 Info (12128): Elaborating entity "alu" for hierarchy "alu:ALU" File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 41
-Warning (10235): Verilog HDL Always Construct warning at alu.v(71): variable "Cin" is read inside the Always Construct but isn't in the Always Construct's Event Control File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 71
-Warning (10764): Verilog HDL warning at alu.v(184): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 184
-Warning (10764): Verilog HDL warning at alu.v(191): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 191
+Warning (10235): Verilog HDL Always Construct warning at alu.v(72): variable "Cin" is read inside the Always Construct but isn't in the Always Construct's Event Control File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 72
+Warning (10764): Verilog HDL warning at alu.v(180): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 180
 Warning (10764): Verilog HDL warning at alu.v(193): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 193
-Info (12128): Elaborating entity "HexTo7Seg" for hierarchy "HexTo7Seg:H0" File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 387
+Warning (10764): Verilog HDL warning at alu.v(195): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 195
+Info (12128): Elaborating entity "HexTo7Seg" for hierarchy "HexTo7Seg:H0" File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 399
 Warning (13024): Output pins are stuck at VCC or GND
     Warning (13410): Pin "HEX5[0]" is stuck at GND File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
     Warning (13410): Pin "HEX5[4]" is stuck at GND File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
@@ -345,14 +356,14 @@ Warning (13024): Output pins are stuck at VCC or GND
 Info (286030): Timing-Driven Synthesis is running
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 608 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 590 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 15 input pins
     Info (21059): Implemented 42 output pins
-    Info (21061): Implemented 551 logic cells
+    Info (21061): Implemented 533 logic cells
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 14 warnings
-    Info: Peak virtual memory: 4864 megabytes
-    Info: Processing ended: Thu Sep 10 14:18:41 2026
-    Info: Elapsed time: 00:00:23
-    Info: Total CPU time (on all processors): 00:00:43
+    Info: Peak virtual memory: 4880 megabytes
+    Info: Processing ended: Thu Sep 10 16:32:49 2026
+    Info: Elapsed time: 00:00:09
+    Info: Total CPU time (on all processors): 00:00:21
 
 

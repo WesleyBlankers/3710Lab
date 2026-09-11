@@ -221,6 +221,18 @@ module top (
             Display_Is_Flags = 1'b0;
 
         end
+		  
+		  else if (SW[9:8] == 2'b10) begin
+				Display_Value    = A_reg;
+				Display_Is_Flags = 1'b0;
+				
+		  end
+		  
+		  else if (SW[9:8] == 2'b01) begin
+				Display_Value    = B_reg;
+				Display_Is_Flags = 1'b0;
+		  end
+		  
 
     end
 
@@ -290,11 +302,11 @@ module top (
     //      1 = segment displays "1"
     //      0 = segment displays "0"
     //
-    // HEX4 = Flag 4
-    // HEX3 = Flag 3
-    // HEX2 = Flag 2
-    // HEX1 = Flag 1
-    // HEX0 = Flag 0
+    // HEX4 = Flags[4] = C (Carry)
+    // HEX3 = Flags[3] = L (Less-than unsigned)
+    // HEX2 = Flags[2] = F (Overflow)
+    // HEX1 = Flags[1] = Z (Zero)
+    // HEX0 = Flags[0] = N (Negative / less-than signed)
     //
     // HEX5 is blank.
     //
@@ -372,7 +384,7 @@ module top (
     //
     // HEX4 HEX3 HEX2 HEX1 HEX0
     //
-    //    F4   F3   F2   F1   F0
+    // F4 C  F3 L  F2 F  F1 Z  F0 N
     //
     //==========================================================
 
@@ -453,6 +465,5 @@ module top (
         .hex_input       (HEX5_Display),
         .segment_display (HEX5)
     );
-
 
 endmodule

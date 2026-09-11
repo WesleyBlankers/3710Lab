@@ -41,15 +41,15 @@ module alu (
             // =================================================
 
             ADD, ADDI: begin
-                C = A + B;
-					 
-					//Zero Flag
-					 if (C == 16'b0)
-						Flags[1] = 1'b1;
-					 else
-						Flags[1] = 1'b0; 
+                {Flags[4], C} = A + B;
 						
-					//Signed Overflow Flag
+					//Zero Flag
+					if (C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
+						
+					// Signed Overflow Flag
 					 if ((~A[15] & ~B[15] & C[15]) | (A[15] & B[15] &~C[15]))
 						Flags[2] = 1'b1;
 					 else
@@ -59,29 +59,29 @@ module alu (
 
             ADDU, ADDUI: begin
                 {Flags[4], C} = A + B;
-					 
+
 					//Zero Flag
-						if (C == 16'b0)
-							Flags[1] = 1'b1;
-						else
-							Flags[1] = 1'b0;
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
+						
             end
 
             ADDC, ADDCI: begin
-               C = A + B + Cin;
-					
+               {Flags[4], C} = A + B + Cin;
+						
 					//Zero Flag
-						if (C == 16'b0)
-							Flags[1] = 1'b1;
-						else
-							Flags[1] = 1'b0;
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
 							
-					//Signed Overflow Flag
+					// Signed Overflow Flag
 						if (( ~A[15] & ~B[15] & C[15]) | (A[15] & B[15] & ~C[15]))
 							Flags[2] = 1'b1;
 						else
 							Flags[2] = 1'b0;
-					
             end
 
             // =================================================
@@ -89,23 +89,19 @@ module alu (
             // =================================================
 
             SUB, SUBI: begin
-                C = A - B;
-					 
+                {Flags[4], C} = A - B;
+					 						
 					//Zero Flag
-					if (C == 16'b0)
+					if ( C == 16'b0)
 						Flags[1] = 1'b1;
 					else
 						Flags[1] = 1'b0;
 						
-					//Overflow Flag
+					// Overflow Flag
 					if ((A[15] ^ B[15]) & (A[15] ^ C[15]))
 						Flags[2] = 1'b1;
 					else
 						Flags[2] = 1'b0;
-						
-					//Reset Other Flags
-					Flags[3] = 1'b0;
-					Flags[0] = 1'b0;
             end
 
             // =================================================
@@ -123,7 +119,7 @@ module alu (
 					Flags[0] = $signed(A) < $signed(B); //Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
-
+				
             CMPUI: begin
 					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
@@ -184,6 +180,12 @@ module alu (
 						C = A >> (-$signed(B));
 					 else
 					   C = A << B;
+						
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
             end
 
             ASHU: begin
@@ -191,6 +193,12 @@ module alu (
 						C = $signed(A) >>> (-$signed(B));
 					 else
 						C = $signed(A) <<< $signed(B);
+						
+					//Zero Flag
+					if ( C == 16'b0)
+						Flags[1] = 1'b1;
+					else
+						Flags[1] = 1'b0;
             end
 
             // =================================================

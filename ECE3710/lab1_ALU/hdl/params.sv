@@ -27,30 +27,32 @@
 `define PARAMS_SV
 
 // Arithmetic
-parameter ADD    = 8'b0000_0101;
-parameter ADDI   = 8'b0101_XXXX;
-parameter ADDU   = 8'b0000_0110;
-parameter ADDUI  = 8'b0110_XXXX;
-parameter ADDC   = 8'b0000_0111;
-parameter ADDCI  = 8'b0111_XXXX;
-parameter SUB    = 8'b0000_1001;
-parameter SUBI   = 8'b1001_XXXX;
+parameter ADD    = 8'b0000_0101;//
+parameter ADDI   = 8'b0101_XXXX;//
+parameter ADDU   = 8'b0000_0110;//
+parameter ADDUI  = 8'b0110_XXXX;//
+parameter ADDC   = 8'b0000_0111;//
+parameter ADDCU  = 8'b0000_1111;// This is an unused OPCODE 4, do not repeat implementation.//
+parameter ADDCUI = 8'b0100_1111;// This is an unused OPCODE 5, do not repeat implementation.//
+parameter ADDCI  = 8'b0111_XXXX;//
+parameter SUB    = 8'b0000_1001;//
+parameter SUBI   = 8'b1001_XXXX;//
 parameter SUBC   = 8'b0000_1010;
 parameter SUBCI  = 8'b1010_XXXX;
 parameter MUL    = 8'b0000_1110;
 parameter MULI   = 8'b1110_XXXX;
-parameter CMP    = 8'b0000_1011;
-parameter CMPI   = 8'b1011_XXXX;
-parameter CMPUI  = 8'b0000_1000; // This is an unused OPCODE 1, do not repeat implementation.
+parameter CMP    = 8'b0000_1011;//
+parameter CMPI   = 8'b1011_XXXX;//
+parameter CMPUI  = 8'b0000_1000; // This is an unused OPCODE 1, do not repeat implementation.//
 
 // Logical
-parameter AND    = 8'b0000_0001;
+parameter AND    = 8'b0000_0001;//
 parameter ANDI   = 8'b0001_XXXX;
-parameter OR     = 8'b0000_0010;
+parameter OR     = 8'b0000_0010;//
 parameter ORI    = 8'b0010_XXXX;
-parameter XOR    = 8'b0000_0011;
+parameter XOR    = 8'b0000_0011;//
 parameter XORI   = 8'b0011_XXXX;
-parameter NOT    = 8'b0000_0100; // This is an unused OPCODE 2, do not repeat implementation.
+parameter NOT    = 8'b0000_0100; // This is an unused OPCODE 2, do not repeat implementation.//
 
 // Move
 parameter MOV    = 8'b0000_1101;
@@ -58,10 +60,11 @@ parameter MOVI   = 8'b1101_XXXX;
 parameter LUI    = 8'b1111_XXXX;
 
 // Shift
-parameter LSH    = 8'b1000_0100;
-parameter LSHI   = 8'b1000_000X;
+parameter LSH    = 8'b1000_0100;//
+parameter LSHI   = 8'b1000_000X;//
 parameter ASHU   = 8'b1000_0110;
 parameter ASHUI  = 8'b1000_001X;
+parameter ALSH   = 8'b1000_0101; //unused opcode. //
 
 // Memory
 parameter LOAD   = 8'b0100_0000;
@@ -84,7 +87,7 @@ parameter DI     = 8'b0100_0011;
 parameter EI     = 8'b0100_0111;
 parameter EXCP   = 8'b0100_1011;
 parameter RETX   = 8'b0100_1001;
-parameter WAIT   = 8'b0000_0000;
+parameter WAIT   = 8'b0000_0000;//
 parameter NOP 	  = 8'b0000_1100; // This is an unused OPCODE 3, do not repeat implementation.
 
 `endif
