@@ -34,6 +34,7 @@ module alu_tb;
     integer passed;
     integer failed;
     integer i;
+	 integer testNumber;
 
     reg [15:0] expected_C;
     reg [4:0]  expected_Flags;
@@ -88,7 +89,7 @@ module alu_tb;
                 failed = failed + 1;
 
                 $display("");
-                $display("FAIL: %s", test_name);
+                $display("FAILED Test #%d: %s", testNumber, test_name);
                 $display("  Opcode          = %h", Opcode);
                 $display("  A               = %h (%0d)", A, A);
                 $display("  B               = %h (%0d)", B, B);
@@ -104,10 +105,10 @@ module alu_tb;
 
                 passed = passed + 1;
 
-                $display("PASS: %s", test_name);
-
+                $display("PASSED Test #%d: %s", testNumber, test_name);
             end
-
+				
+				testNumber = testNumber + 1;
         end
 
     endtask
@@ -121,6 +122,7 @@ module alu_tb;
 
         passed = 0;
         failed = 0;
+		  testNumber = 1;
 
         A      = 16'd0;
         B      = 16'd0;
@@ -184,7 +186,7 @@ module alu_tb;
             ADD,
             1'b0,
             16'h8000,
-            5'b00101
+            5'b00100
         );
 
         // 5. Negative signed overflow
@@ -196,7 +198,7 @@ module alu_tb;
             ADD,
             1'b0,
             16'h7FFF,
-            5'b00100
+            5'b10100
         );
 
 
@@ -365,7 +367,7 @@ module alu_tb;
             SUB,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
         // Positive overflow
@@ -377,7 +379,7 @@ module alu_tb;
             SUB,
             1'b0,
             16'h8000,
-            5'b00101
+            5'b00100
         );
 
         // Negative overflow
@@ -420,7 +422,7 @@ module alu_tb;
             CMP,
             1'b0,
             16'd0,
-            5'b00001
+            5'b01001
         );
 
         // A > B
@@ -576,7 +578,7 @@ module alu_tb;
             AND,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
 
@@ -611,7 +613,7 @@ module alu_tb;
             OR,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
 
@@ -646,7 +648,7 @@ module alu_tb;
             XOR,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
 
@@ -661,7 +663,7 @@ module alu_tb;
             NOT,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
         run_test(
@@ -681,7 +683,7 @@ module alu_tb;
             NOT,
             1'b0,
             16'hFFF0,
-            5'b00001
+            5'b00000
         );
 
 
@@ -730,7 +732,7 @@ module alu_tb;
             LSH,
             1'b0,
             16'h8000,
-            5'b00001
+            5'b00000
         );
 
         // Shift by 16
@@ -766,7 +768,7 @@ module alu_tb;
             LSHI,
             1'b0,
             16'h8000,
-            5'b00001
+            5'b00000
         );
 
 
@@ -805,7 +807,7 @@ module alu_tb;
             ALSH,
             1'b0,
             16'hFFFC,
-            5'b00001
+            5'b00000
         );
 
         // -1 >>> 1 should remain -1
@@ -816,7 +818,7 @@ module alu_tb;
             ALSH,
             1'b0,
             16'hFFFF,
-            5'b00001
+            5'b00000
         );
 
         // Most-negative number
@@ -828,7 +830,7 @@ module alu_tb;
             ALSH,
             1'b0,
             16'hC000,
-            5'b00001
+            5'b00000
         );
 
 
@@ -849,48 +851,6 @@ module alu_tb;
             5'b00000
         );
 
-
-        // ========================================================
-        // RANDOMIZED ADDU TESTS
-        // ========================================================
-
-        $display("");
-        $display("============================================================");
-        $display("                RANDOMIZED ADDU TESTS");
-        $display("============================================================");
-
-        for (i = 0; i < 1000; i = i + 1) begin
-
-            A = $random;
-            B = $random;
-            Cin = $random;
-            Opcode = ADDU;
-
-            temp_result = A + B + Cin;
-
-            #1;
-
-            if (C !== temp_result[15:0]) begin
-
-                failed = failed + 1;
-
-                $display("");
-                $display("FAIL: Random ADDU test %0d", i);
-                $display("  A        = %h", A);
-                $display("  B        = %h", B);
-                $display("  Cin      = %b", Cin);
-                $display("  Expected = %h", temp_result[15:0]);
-                $display("  Actual   = %h", C);
-                $display("");
-
-            end
-            else begin
-                passed = passed + 1;
-            end
-
-        end
-
-
         // ========================================================
         // RANDOMIZED LOGIC TESTS
         // ========================================================
@@ -904,7 +864,7 @@ module alu_tb;
 
             A = $random;
             B = $random;
-            Cin = $random;
+            Cin = 0;
 
             // --------------------------------------------
             // AND

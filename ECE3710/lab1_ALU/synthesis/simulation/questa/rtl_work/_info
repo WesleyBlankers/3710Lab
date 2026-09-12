@@ -1,0 +1,155 @@
+m255
+K4
+z2
+!s12c _opt
+Z0 !s99 nomlopt
+!s11f vlog 2025.2 2025.05, May 31 2025
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z1 dC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/simulation/questa
+T_opt
+!i145 1
+!i144 0
+!s110 1789254678
+V?047z0DZdP>ZGZl5ZV:OS0
+04 6 4 work alu_tb fast 0
+=1-b48c9da0dd31-6aa5dc14-348-4e80
+R0
+!s12f OEM100
+!s12b OEM100
+!s124 OEM10U2 
+!s135 nogc
+o-quiet -auto_acc_if_foreign -work work -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work +acc
+tCvgOpt 0 defaultOptions 1107585188
+n@_opt
+OL;O;2025.2;82
+valu
+2C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v
+Z2 !s110 1789254669
+!i10b 1
+!s100 ><4NmlbbWONH64^7XAnDU0
+Ii3QbFD?EoR76`YlXHP46F1
+R1
+Z3 w1789252299
+8C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v
+FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v
+Z4 FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv
+!i122 5
+L0 1 311
+Z5 VDg1SIo80bB@j0V0VzS_@n1
+Z6 OL;L;2025.2;82
+r1
+!s85 0
+31
+Z7 !s108 1789254669.000000
+!s107 C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v|
+!s90 -reportprogress|300|-work|work|+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v|
+!i113 0
+Z8 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z9 !s92 -work work {+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl} -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z10 tCvgOpt 0 defaultOptions 1085333592
+valu_tb
+2C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v
+!s110 1789254668
+!i10b 1
+!s100 [JhJKYco<L[oi>cMI=^C03
+IYgCgici[@K=^Y9aYk:n9O2
+R1
+w1789254170
+8C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v
+FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v
+FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/../hdl/params.sv
+!i122 4
+L0 3 1068
+R5
+R6
+r1
+!s85 0
+31
+!s108 1789254668.000000
+!s107 C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/../hdl/params.sv|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v|
+!s90 -reportprogress|300|-work|work|+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v|
+!i113 0
+R8
+!s92 -work work {+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation} -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R10
+vHexTo7Seg
+2C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v
+!s110 1789254667
+!i10b 1
+!s100 :C5N;4?N2YObVJoz7aiGN0
+ITiXcmDJMeR<1]nF5Kkk_N3
+R1
+Z11 w1789171618
+8C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v
+FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v
+!i122 0
+L0 5 34
+R5
+R6
+r1
+!s85 0
+31
+!s108 1789254667.000000
+!s107 C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v|
+!s90 -reportprogress|300|-work|work|+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v|
+!i113 0
+R8
+!s92 -work work {+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl} -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R10
+n@hex@to7@seg
+Xparams_sv_unit
+2C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv
+DXx6 sv_std 3 std 0 22 @5XbY]_OacJl=`ToSm<M^0
+R2
+VjSG5n4c2J@mLFaBkORTJW2
+r1
+!s85 0
+!i10b 1
+!s100 cgoNUV`T__:A]Yk8@gm4^2
+IjSG5n4c2J@mLFaBkORTJW2
+!i103 1
+S1
+R1
+R3
+8C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv
+R4
+!i122 6
+L0 30 0
+R6
+31
+R7
+!s107 C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv|
+!s90 -reportprogress|300|-sv|-work|work|+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv|
+!i113 0
+o-sv -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+!s92 -sv -work work {+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl} -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R10
+vtop
+2C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v
+R2
+!i10b 1
+!s100 <EOnYX4Ka:8mjoOaAZ22_3
+Ie41boVjBAaJBDoSQih4V?1
+R1
+R11
+8C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v
+FC:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v
+!i122 7
+L0 1 469
+R5
+R6
+r1
+!s85 0
+31
+R7
+!s107 C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v|
+!s90 -reportprogress|300|-work|work|+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl|C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v|
+!i113 0
+R8
+R9
+R10

@@ -38,7 +38,7 @@ module alu (
             // =================================================
 
             ADD, ADDI: begin
-                {Flags[4], C} = A + B;
+                {Flags[4], C} = $signed(A) + $signed(B);
 						
 					//Zero Flag
 					if (C == 16'b0)
@@ -179,7 +179,7 @@ module alu (
 						Flags[1] = 1'b0;
             end
 
-            ASHU: begin
+            ALSH: begin
                 if ($signed(B) < 0)
 						C = $signed(A) >>> (-$signed(B));
 					 else

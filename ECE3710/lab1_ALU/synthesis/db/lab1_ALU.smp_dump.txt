@@ -1,7 +1,0 @@
-
-State Machine - |top|mode
-Name mode.MODE_A mode.MODE_OPCODE mode.MODE_B mode.MODE_RESULT 
-mode.MODE_RESULT 0 0 0 0 
-mode.MODE_B 0 0 1 1 
-mode.MODE_OPCODE 0 1 0 1 
-mode.MODE_A 1 0 0 1 

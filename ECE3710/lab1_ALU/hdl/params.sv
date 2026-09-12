@@ -63,9 +63,8 @@ parameter LUI    = 8'b1111_XXXX;
 // Shift
 parameter LSH    = 8'b1000_0100;//
 parameter LSHI   = 8'b1000_000X;//
-parameter ASHU   = 8'b1000_0110;
+parameter ALSH   = 8'b1000_0110;
 parameter ASHUI  = 8'b1000_001X;
-parameter ALSH   = 8'b1000_0101; //unused opcode. //
 
 // Memory
 parameter LOAD   = 8'b0100_0000;

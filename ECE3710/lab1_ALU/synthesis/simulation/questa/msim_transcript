@@ -1,0 +1,215 @@
+# Reading pref.tcl
+# //  Questa Altera Starter FPGA Edition-64
+# //  Version 2025.2 win64 May 31 2025
+# //
+# // Unpublished work. Copyright 2025 Siemens
+# //
+# // This material contains trade secrets or otherwise confidential information
+# // owned by Siemens Industry Software Inc. or its affiliates (collectively,
+# // "SISW"), or its licensors. Access to and use of this information is strictly
+# // limited as set forth in the Customer's applicable agreements with SISW.
+# //
+# // This material may not be copied, distributed, or otherwise disclosed outside
+# // of the Customer's facilities without the express written permission of SISW,
+# // and may not be used in any way not expressly authorized by SISW.
+# //
+# do lab1_ALU_run_msim_rtl_verilog.do
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Questa Altera Starter FPGA Edition-64 vmap 2025.2 Lib Mapping Utility 2025.05 May 31 2025
+# vmap work rtl_work 
+# ** Note: (vmap-220) 'C:/altera_lite/25.1std/questa_fse/win64/../modelsim.ini' is used as the ini file.
+# Copying C:/altera_lite/25.1std/questa_fse/win64/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# 
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:07 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module HexTo7Seg
+# 
+# Top level modules:
+# 	HexTo7Seg
+# End time: 17:11:07 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:07 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module top
+# 
+# Top level modules:
+# 	top
+# End time: 17:11:07 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:07 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module alu
+# 
+# Top level modules:
+# 	alu
+# End time: 17:11:07 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/params.sv}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:08 on Sep 12,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/params.sv 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling package params_sv_unit
+# 
+# Top level modules:
+# 	--none--
+# End time: 17:11:08 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:08 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module alu_tb
+# 
+# Top level modules:
+# 	alu_tb
+# End time: 17:11:08 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:09 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module alu
+# 
+# Top level modules:
+# 	alu
+# End time: 17:11:09 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:09 on Sep 12,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# ** Warning: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv(30): (vlog-13233) Design unit "params_sv_unit" already exists and will be overwritten. Overwriting SystemVerilog $unit with different source files.
+# -- Compiling package params_sv_unit
+# 
+# Top level modules:
+# 	--none--
+# End time: 17:11:09 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 1
+# vlog  -work work +incdir+C:/Users/jackn/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v}
+# Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+# Start time: 17:11:09 on Sep 12,2026
+# vlog -reportprogress 300 -work work "+incdir+C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl" C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v 
+# ** Note: (vlog-220) 'modelsim.ini' is used as the ini file.
+# -- Compiling module top
+# 
+# Top level modules:
+# 	top
+# End time: 17:11:09 on Sep 12,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs="+acc"  alu_tb
+# ** Note: (vsim-220) 'modelsim.ini' is used as the ini file.
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs=""+acc"" alu_tb 
+# Start time: 17:11:10 on Sep 12,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10908) Some optimizations are turned off because the +acc switch is in effect.
+# ** Note: (vopt-220) 'modelsim.ini' is used as the ini file.
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# Loading work.alu_tb(fast)
+# Loading work.alu(fast)
+# 
+# add wave *
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run -all
+# 
+# ============================================================
+#                  STARTING ALU TESTBENCH
+# ============================================================
+# 
+# PASSED Test #          1:                     ADD: 10 + 20
+# PASSED Test #          2:                       ADD: 0 + 0
+# PASSED Test #          3:                  ADD: 15 + (-10)
+# PASSED Test #          4:           ADD: positive overflow
+# PASSED Test #          5:           ADD: negative overflow
+# PASSED Test #          6:                     ADDI: 10 + 3
+# PASSED Test #          7:                      ADDI: 0 + 0
+# PASSED Test #          8:             ADDU: unsigned carry
+# PASSED Test #          9:                   ADDU: FFFF + 1
+# PASSED Test #         10:                    ADDU: 100 + 5
+# PASSED Test #         11:                   ADDUI: 100 + 5
+# PASSED Test #         12:                ADDC: 10 + 20 + 0
+# PASSED Test #         13:                ADDC: 10 + 20 + 1
+# PASSED Test #         14:               ADDC: FFFF + 0 + 1
+# PASSED Test #         15:                ADDCI: 10 + 2 + 1
+# PASSED Test #         16:                      SUB: 20 - 5
+# PASSED Test #         17:                     SUB: 20 - 20
+# PASSED Test #         18:                       SUB: 0 - 1
+# PASSED Test #         19:           SUB: positive overflow
+# PASSED Test #         20:           SUB: negative overflow
+# PASSED Test #         21:                     SUBI: 20 - 4
+# PASSED Test #         22:                     CMP: 10 < 20
+# PASSED Test #         23:                     CMP: 20 > 10
+# PASSED Test #         24:                    CMP: 10 == 10
+# PASSED Test #         25:               CMP: signed -1 < 1
+# PASSED Test #         26:            CMP: signed MIN < MAX
+# PASSED Test #         27:                     CMPI: 15 > 5
+# PASSED Test #         28:                   CMPI: 15 == 15
+# PASSED Test #         29:          CMPUI: unsigned 10 < 20
+# PASSED Test #         30:                 CMPUI: 65535 > 5
+# PASSED Test #         31:                CMPUI: 100 == 100
+# PASSED Test #         32:      CMPUI: FFFF > 0001 unsigned
+# PASSED Test #         33:                     AND: 12 & 10
+# PASSED Test #         34:                      AND: 15 & 0
+# PASSED Test #         35:                 AND: FFFF & FFFF
+# PASSED Test #         36:                      OR: 12 | 10
+# PASSED Test #         37:                        OR: 0 | 0
+# PASSED Test #         38:                     OR: FFFF | 0
+# PASSED Test #         39:                     XOR: 12 ^ 10
+# PASSED Test #         40:                     XOR: 15 ^ 15
+# PASSED Test #         41:                 XOR: FFFF ^ 0000
+# PASSED Test #         42:                       NOT: ~0000
+# PASSED Test #         43:                       NOT: ~FFFF
+# PASSED Test #         44:                       NOT: ~000F
+# PASSED Test #         45:                      LSH: 5 << 2
+# PASSED Test #         46:                     LSH: 20 >> 2
+# PASSED Test #         47:               LSH: shift by zero
+# PASSED Test #         48:                     LSH: 1 << 15
+# PASSED Test #         49:                     LSH: 1 << 16
+# PASSED Test #         50:                     LSHI: 3 << 3
+# PASSED Test #         51:                    LSHI: 1 << 15
+# PASSED Test #         52:                     ALSH: 5 << 2
+# PASSED Test #         53:                    ALSH: 20 >> 2
+# PASSED Test #         54:                  ALSH: -16 >>> 2
+# PASSED Test #         55:                   ALSH: -1 >>> 1
+# PASSED Test #         56:                 ALSH: 8000 >>> 1
+# PASSED Test #         57:               INVALID OPCODE: FF
+# 
+# ============================================================
+#                 RANDOMIZED LOGIC TESTS
+# ============================================================
+# 
+# ============================================================
+#                   ALU TESTBENCH COMPLETE
+# ============================================================
+# Tests Passed : 4057
+# Tests Failed : 0
+# ============================================================
+# RESULT: ALL TESTS PASSED!
+# 
+# ** Note: $stop    : C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v(974)
+#    Time: 4077 ns  Iteration: 0  Instance: /alu_tb
+# Break in Module alu_tb at C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v line 974
+# End time: 17:11:39 on Sep 12,2026, Elapsed time: 0:00:29
+# Errors: 0, Warnings: 1
