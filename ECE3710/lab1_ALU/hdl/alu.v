@@ -25,10 +25,7 @@ module alu (
     // Flags[1] = Z (Zero)
     // Flags[0] = N (Negative / less-than signed)
 
-	 
-	 
-
-    always @(A, B, Opcode) begin
+    always @(A, B, Opcode, Cin) begin
 
         // Default values
         C     = 16'b0;
@@ -89,7 +86,7 @@ module alu (
             // =================================================
 
             SUB, SUBI: begin
-                {Flags[4], C} = A - B;
+               C = $signed(A) - $signed(B);
 					 						
 					//Zero Flag
 					if ( C == 16'b0)
@@ -108,19 +105,13 @@ module alu (
             // COMPARISON
             // =================================================
 
-            CMP: begin
+            CMP, CMPI: begin
 					Flags[3] = A < B; // Set Low flag
 					Flags[0] = $signed(A) < $signed(B); // Set Less than flag
 					Flags[1] = $signed(A) == $signed(B); // Set equal flag
             end
-
-            CMPI: begin
-					Flags[3] = A < B; // Set Low flag
-					Flags[0] = $signed(A) < $signed(B); //Set Less than flag
-					Flags[1] = $signed(A) == $signed(B); // Set equal flag
-            end
 				
-            CMPUI: begin
+            CMPU, CMPUI: begin
 					Flags[3] = A < B; // Set Low flag
                Flags[0] = A < B; // Set Less than flag
 					Flags[1] = A == B; // Set equal flag

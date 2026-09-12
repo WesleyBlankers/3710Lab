@@ -1,5 +1,5 @@
 Analysis & Synthesis report for lab1_ALU
-Thu Sep 10 16:32:49 2026
+Fri Sep 11 12:35:26 2026
 Quartus Prime Version 25.1std.0 Build 1129 10/21/2025 SC Standard Edition
 
 
@@ -45,7 +45,7 @@ on the Quartus Prime software download page.
 +---------------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                          ;
 +---------------------------------+-----------------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Thu Sep 10 16:32:49 2026               ;
+; Analysis & Synthesis Status     ; Successful - Fri Sep 11 12:35:26 2026               ;
 ; Quartus Prime Version           ; 25.1std.0 Build 1129 10/21/2025 SC Standard Edition ;
 ; Revision Name                   ; lab1_ALU                                            ;
 ; Top-level Entity Name           ; top                                                 ;
@@ -157,7 +157,7 @@ on the Quartus Prime software download page.
 +----------------------------+-------------+
 ; Processors                 ; Number      ;
 +----------------------------+-------------+
-; Number detected on machine ; 16          ;
+; Number detected on machine ; 24          ;
 ; Maximum allowed            ; 16          ;
 ;                            ;             ;
 ; Average used               ; 1.00        ;
@@ -168,16 +168,16 @@ on the Quartus Prime software download page.
 +----------------------------+-------------+
 
 
-+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                                                                 ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------+---------+
-; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                             ; Library ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------+---------+
-; ../hdl/params.sv                 ; yes             ; User SystemVerilog HDL File  ; C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/params.sv   ;         ;
-; ../hdl/HexTo7Seg.v               ; yes             ; User Verilog HDL File        ; C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v ;         ;
-; ../hdl/alu.v                     ; yes             ; User Verilog HDL File        ; C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v       ;         ;
-; ../hdl/top.v                     ; yes             ; User Verilog HDL File        ; C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v       ;         ;
-+----------------------------------+-----------------+------------------------------+--------------------------------------------------------------------------+---------+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                          ;
++----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                      ; Library ;
++----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------------+---------+
+; ../hdl/params.sv                 ; yes             ; User SystemVerilog HDL File  ; C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/params.sv   ;         ;
+; ../hdl/HexTo7Seg.v               ; yes             ; User Verilog HDL File        ; C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v ;         ;
+; ../hdl/alu.v                     ; yes             ; User Verilog HDL File        ; C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v       ;         ;
+; ../hdl/top.v                     ; yes             ; User Verilog HDL File        ; C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v       ;         ;
++----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------------+---------+
 
 
 +---------------------------------------------------------+
@@ -187,12 +187,12 @@ on the Quartus Prime software download page.
 +---------------------------------------------+-----------+
 ; Estimate of Logic utilization (ALMs needed) ; 339       ;
 ;                                             ;           ;
-; Combinational ALUT usage for logic          ; 493       ;
-;     -- 7 input functions                    ; 23        ;
-;     -- 6 input functions                    ; 157       ;
-;     -- 5 input functions                    ; 113       ;
-;     -- 4 input functions                    ; 112       ;
-;     -- <=3 input functions                  ; 88        ;
+; Combinational ALUT usage for logic          ; 499       ;
+;     -- 7 input functions                    ; 22        ;
+;     -- 6 input functions                    ; 151       ;
+;     -- 5 input functions                    ; 131       ;
+;     -- 4 input functions                    ; 108       ;
+;     -- <=3 input functions                  ; 87        ;
 ;                                             ;           ;
 ; Dedicated logic registers                   ; 40        ;
 ;                                             ;           ;
@@ -201,9 +201,9 @@ on the Quartus Prime software download page.
 ; Total DSP Blocks                            ; 0         ;
 ;                                             ;           ;
 ; Maximum fan-out node                        ; B_reg[15] ;
-; Maximum fan-out                             ; 52        ;
-; Total fan-out                               ; 2557      ;
-; Average fan-out                             ; 3.95      ;
+; Maximum fan-out                             ; 53        ;
+; Total fan-out                               ; 2593      ;
+; Average fan-out                             ; 3.97      ;
 +---------------------------------------------+-----------+
 
 
@@ -212,13 +212,13 @@ on the Quartus Prime software download page.
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
 ; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name ; Entity Name ; Library Name ;
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
-; |top                       ; 493 (227)           ; 40 (40)                   ; 0                 ; 0          ; 57   ; 0            ; |top                ; top         ; work         ;
+; |top                       ; 499 (220)           ; 40 (40)                   ; 0                 ; 0          ; 57   ; 0            ; |top                ; top         ; work         ;
 ;    |HexTo7Seg:H0|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H0   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H1|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H1   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H2|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H2   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H3|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H3   ; HexTo7Seg   ; work         ;
 ;    |HexTo7Seg:H4|          ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|HexTo7Seg:H4   ; HexTo7Seg   ; work         ;
-;    |alu:ALU|               ; 231 (231)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|alu:ALU        ; alu         ; work         ;
+;    |alu:ALU|               ; 244 (244)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |top|alu:ALU        ; alu         ; work         ;
 +----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -261,8 +261,8 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; 6:1                ; 4 bits    ; 16 LEs        ; 12 LEs               ; 4 LEs                  ; No         ; |top|alu:ALU|C             ;
 ; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |top|alu:ALU|C             ;
 ; 8:1                ; 4 bits    ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |top|alu:ALU|ShiftLeft0    ;
-; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[10]     ;
-; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[4]      ;
+; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[11]     ;
+; 262:1              ; 7 bits    ; 1218 LEs      ; 105 LEs              ; 1113 LEs               ; No         ; |top|Display_Value[2]      ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
 
 
@@ -282,28 +282,27 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------+-----------------------------+
 ; arriav_ff             ; 40                          ;
 ;     ENA               ; 40                          ;
-; arriav_lcell_comb     ; 504                         ;
+; arriav_lcell_comb     ; 510                         ;
 ;     arith             ; 33                          ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 16                          ;
 ;         2 data inputs ; 16                          ;
-;     extend            ; 23                          ;
-;         7 data inputs ; 23                          ;
-;     normal            ; 431                         ;
+;     extend            ; 22                          ;
+;         7 data inputs ; 22                          ;
+;     normal            ; 439                         ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 10                          ;
-;         2 data inputs ; 16                          ;
-;         3 data inputs ; 22                          ;
-;         4 data inputs ; 112                         ;
-;         5 data inputs ; 113                         ;
-;         6 data inputs ; 157                         ;
-;     shared            ; 17                          ;
-;         0 data inputs ; 1                           ;
+;         2 data inputs ; 10                          ;
+;         3 data inputs ; 28                          ;
+;         4 data inputs ; 108                         ;
+;         5 data inputs ; 131                         ;
+;         6 data inputs ; 151                         ;
+;     shared            ; 16                          ;
 ;         2 data inputs ; 16                          ;
 ; boundary_port         ; 57                          ;
 ;                       ;                             ;
 ; Max LUT depth         ; 16.40                       ;
-; Average LUT depth     ; 13.87                       ;
+; Average LUT depth     ; 13.91                       ;
 +-----------------------+-----------------------------+
 
 
@@ -322,48 +321,47 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 25.1std.0 Build 1129 10/21/2025 SC Standard Edition
-    Info: Processing started: Thu Sep 10 16:32:40 2026
+    Info: Processing started: Fri Sep 11 12:35:18 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off lab1_ALU -c lab1_ALU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
-Info (20030): Parallel compilation is enabled and will use 16 of the 16 processors detected
-Info (12021): Found 0 design units, including 0 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/params.sv
-Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/simulation/tb_hexto7seg.v
-    Info (12023): Found entity 1: tb_HexTo7Seg File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/tb_HexTo7Seg.v Line: 14
-Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/hexto7seg.v
-    Info (12023): Found entity 1: HexTo7Seg File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v Line: 5
-Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/simulation/alu_tb.v
-    Info (12023): Found entity 1: alutest File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/alu_tb.v Line: 26
-Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/alu.v
-    Info (12023): Found entity 1: alu File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 1
-Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/top.v
-    Info (12023): Found entity 1: top File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 1
+Info (20030): Parallel compilation is enabled and will use 16 of the 24 processors detected
+Info (12021): Found 0 design units, including 0 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/params.sv
+Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/simulation/tb_hexto7seg.v
+    Info (12023): Found entity 1: tb_HexTo7Seg File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/tb_HexTo7Seg.v Line: 14
+Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/hexto7seg.v
+    Info (12023): Found entity 1: HexTo7Seg File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v Line: 5
+Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/simulation/alu_tb.v
+    Info (12023): Found entity 1: alu_tb File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/simulation/alu_tb.v Line: 3
+Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/alu.v
+    Info (12023): Found entity 1: alu File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 1
+Info (12021): Found 1 design units, including 1 entities, in source file /users/jackn/onedrive/desktop/ece 3710/3710lab/ece3710/lab1_alu/hdl/top.v
+    Info (12023): Found entity 1: top File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 1
 Info (12127): Elaborating entity "top" for the top level hierarchy
-Warning (10036): Verilog HDL or VHDL warning at top.v(167): object "Display_Flags" assigned a value but never read File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 167
-Warning (10230): Verilog HDL assignment warning at top.v(268): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 268
-Warning (10230): Verilog HDL assignment warning at top.v(271): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 271
-Warning (10230): Verilog HDL assignment warning at top.v(274): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 274
-Warning (10230): Verilog HDL assignment warning at top.v(277): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 277
-Info (12128): Elaborating entity "alu" for hierarchy "alu:ALU" File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 41
-Warning (10235): Verilog HDL Always Construct warning at alu.v(72): variable "Cin" is read inside the Always Construct but isn't in the Always Construct's Event Control File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 72
-Warning (10764): Verilog HDL warning at alu.v(180): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 180
-Warning (10764): Verilog HDL warning at alu.v(193): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 193
-Warning (10764): Verilog HDL warning at alu.v(195): converting signed shift amount to unsigned File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 195
-Info (12128): Elaborating entity "HexTo7Seg" for hierarchy "HexTo7Seg:H0" File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 399
+Warning (10036): Verilog HDL or VHDL warning at top.v(167): object "Display_Flags" assigned a value but never read File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 167
+Warning (10230): Verilog HDL assignment warning at top.v(268): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 268
+Warning (10230): Verilog HDL assignment warning at top.v(271): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 271
+Warning (10230): Verilog HDL assignment warning at top.v(274): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 274
+Warning (10230): Verilog HDL assignment warning at top.v(277): truncated value with size 32 to match size of target (4) File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 277
+Info (12128): Elaborating entity "alu" for hierarchy "alu:ALU" File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 41
+Warning (10764): Verilog HDL warning at alu.v(171): converting signed shift amount to unsigned File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 171
+Warning (10764): Verilog HDL warning at alu.v(184): converting signed shift amount to unsigned File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 184
+Warning (10764): Verilog HDL warning at alu.v(186): converting signed shift amount to unsigned File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v Line: 186
+Info (12128): Elaborating entity "HexTo7Seg" for hierarchy "HexTo7Seg:H0" File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 399
 Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "HEX5[0]" is stuck at GND File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
-    Warning (13410): Pin "HEX5[4]" is stuck at GND File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
-    Warning (13410): Pin "HEX5[5]" is stuck at GND File: C:/Users/jackn/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
+    Warning (13410): Pin "HEX5[0]" is stuck at GND File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
+    Warning (13410): Pin "HEX5[4]" is stuck at GND File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
+    Warning (13410): Pin "HEX5[5]" is stuck at GND File: C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v Line: 12
 Info (286030): Timing-Driven Synthesis is running
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 590 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 596 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 15 input pins
     Info (21059): Implemented 42 output pins
-    Info (21061): Implemented 533 logic cells
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 14 warnings
-    Info: Peak virtual memory: 4880 megabytes
-    Info: Processing ended: Thu Sep 10 16:32:49 2026
-    Info: Elapsed time: 00:00:09
-    Info: Total CPU time (on all processors): 00:00:21
+    Info (21061): Implemented 539 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 13 warnings
+    Info: Peak virtual memory: 4881 megabytes
+    Info: Processing ended: Fri Sep 11 12:35:26 2026
+    Info: Elapsed time: 00:00:08
+    Info: Total CPU time (on all processors): 00:00:14
 
 

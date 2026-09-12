@@ -1,0 +1,23 @@
+transcript on
+if {[file exists rtl_work]} {
+	vdel -lib rtl_work -all
+}
+vlib rtl_work
+vmap work rtl_work
+
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/HexTo7Seg.v}
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/top.v}
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/alu.v}
+vlog -sv -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/hdl/params.sv}
+
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../simulation/alu_tb.v}
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/alu.v}
+vlog -sv -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/params.sv}
+vlog  -work work +incdir+C:/Users/jackn/OneDrive/Desktop/ECE\ 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl {C:/Users/jackn/OneDrive/Desktop/ECE 3710/3710Lab/ECE3710/lab1_ALU/synthesis/../hdl/top.v}
+
+vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs="+acc"  alu_tb
+
+add wave *
+view structure
+view signals
+run -all

@@ -43,7 +43,8 @@ parameter MUL    = 8'b0000_1110;
 parameter MULI   = 8'b1110_XXXX;
 parameter CMP    = 8'b0000_1011;//
 parameter CMPI   = 8'b1011_XXXX;//
-parameter CMPUI  = 8'b0000_1000; // This is an unused OPCODE 1, do not repeat implementation.//
+parameter CMPU   = 8'b1000_0101;// This is an unused OPCODE 6, do not repeat implementation.//
+parameter CMPUI  = 8'b0000_1000;// This is an unused OPCODE 1, do not repeat implementation.//
 
 // Logical
 parameter AND    = 8'b0000_0001;//
