@@ -1,327 +1,1018 @@
 `timescale 1ns / 1ps
 
 module alu_tb;
-`include "../hdl/params.sv"
-	// Inputs
-	reg [15:0] A,B;
-	reg [7:0] Opcode;
-	reg Cin;
-	// Outputs
-	wire [15:0] C;
-   wire [4:0] Flags;
 
-	integer i;
-	
-	// Instantiate the Unit Under Test (UUT)
-	alu uut (
-		.A(A), 
-		.B(B), 
-		.Cin(Cin), 
-		.C(C),
-		.Opcode(Opcode), 
-		.Flags(Flags)
-	);
- // Flags:
+`include "../hdl/params.sv"
+
+    // ============================================================
+    // DUT INPUTS
+    // ============================================================
+
+    reg [15:0] A;
+    reg [15:0] B;
+    reg [7:0]  Opcode;
+    reg        Cin;
+
+    // ============================================================
+    // DUT OUTPUTS
+    // ============================================================
+
+    wire [15:0] C;
+    wire [4:0]  Flags;
+
+    // Flags:
     // Flags[4] = C (Carry)
     // Flags[3] = L (Less-than unsigned)
-    // Flags[2] = F (Overflow
+    // Flags[2] = F (Signed overflow)
     // Flags[1] = Z (Zero)
-    // Flags[0] = N (Negative / less-than signed)
+    // Flags[0] = N (Negative / signed less-than)
 
-	initial begin
+    // ============================================================
+    // TESTBENCH VARIABLES
+    // ============================================================
 
-	#10
-		  A = 16'd0;
-        B = 16'd0;
+    integer passed;
+    integer failed;
+    integer i;
+
+    reg [15:0] expected_C;
+    reg [4:0]  expected_Flags;
+
+    reg [16:0] temp_result;
+
+    // ============================================================
+    // INSTANTIATE ALU
+    // ============================================================
+
+    alu uut (
+        .A(A),
+        .B(B),
+        .Cin(Cin),
+        .C(C),
+        .Opcode(Opcode),
+        .Flags(Flags)
+    );
+
+    // ============================================================
+    // TEST TASK
+    // ============================================================
+    //
+    // Applies inputs, waits for combinational logic to settle,
+    // and checks both C and Flags.
+    //
+    // ============================================================
+
+    task run_test;
+
+        input [255:0] test_name;
+        input [15:0]  test_A;
+        input [15:0]  test_B;
+        input [7:0]   test_Opcode;
+        input         test_Cin;
+        input [15:0]  test_expected_C;
+        input [4:0]   test_expected_Flags;
+
+        begin
+
+            A      = test_A;
+            B      = test_B;
+            Opcode = test_Opcode;
+            Cin    = test_Cin;
+
+            // Give combinational logic time to settle
+            #1;
+
+            if ((C !== test_expected_C) ||
+                (Flags !== test_expected_Flags)) begin
+
+                failed = failed + 1;
+
+                $display("");
+                $display("FAIL: %s", test_name);
+                $display("  Opcode          = %h", Opcode);
+                $display("  A               = %h (%0d)", A, A);
+                $display("  B               = %h (%0d)", B, B);
+                $display("  Cin             = %b", Cin);
+                $display("  Expected C      = %h", test_expected_C);
+                $display("  Actual C        = %h", C);
+                $display("  Expected Flags  = %b", test_expected_Flags);
+                $display("  Actual Flags    = %b", Flags);
+                $display("");
+
+            end
+            else begin
+
+                passed = passed + 1;
+
+                $display("PASS: %s", test_name);
+
+            end
+
+        end
+
+    endtask
+
+
+    // ============================================================
+    // START TESTING
+    // ============================================================
+
+    initial begin
+
+        passed = 0;
+        failed = 0;
+
+        A      = 16'd0;
+        B      = 16'd0;
         Opcode = 8'd0;
-        Cin = 1'b0;
-	#10
-	
-	// Monitor automatically prints every time A, B, C, or Flags change
-        $monitor("Time=%0t | Op=%h | A=%0d | B=%0d | C=%0d |Cin=%0d | Flags(C,L,F,Z,N)=%b", 
-                 $time, Opcode, A, B, C, Cin, Flags);
-
-        #10; // Wait 10 ns
-    // 1. ADD: Signed Addition (15 + -10 = 5)
-    A = 16'sd15;
-    B = -16'sd10;
-    Opcode = ADD;
-    #10;
-
-    // 2. ADDI: Add Immediate (10 + 3 = 13)
-    A = 16'sd10;
-	 B = 16'sd3;
-    Opcode = ADDI; 
-    #10;
-
-    // 3. ADDU: Unsigned Addition (65530 + 10 = 4 -> Carry Out)
-    A = 16'd65530; 
-    B = 16'd10;
-    Opcode = ADDU;
-    #10;
-
-    // 4. ADDUI: Add Immediate Unsigned (100 + 5 = 105)
-    A = 16'd100;
-	 B = 16'd5;
-    Opcode = ADDUI; 
-    #10;
-
-    // 5. ADDC: Add with Carry (10 + 20 + 1 = 31)
-    A = 16'd10;
-    B = 16'd20;
-    Cin = 1'b1;
-    Opcode = ADDC;
-    #10;
-
-    // 6. ADDCI: Add with Carry Immediate (10 + 2 + 1 = 13)
-    A = 16'd10;
-	 B = 16'd2;
-    Cin = 1'b1;
-    Opcode = ADDCI; 
-    #10;
-
-    // 7. SUB: Signed Subtraction (20 - 5 = 15)
-    Cin = 1'b0;
-    A = 16'sd20;
-    B = 16'sd5;
-    Opcode = SUB;
-    #10;
-
-    // 8. SUBI: Subtract Immediate (20 - 4 = 16)
-    A = 16'sd20;
-	 B = 16'sd4;
-    Opcode = SUBI; 
-    #10;
-
-   //We don't need MUL or MULI yet. 
-   /* // 11. MUL: Signed Multiplication (6 * 7 = 42)
-    Cin = 1'b0;
-    A = 16'sd6;
-    B = 16'sd7;
-    Opcode = MUL;
-    #10;
-
-    // 12. MULI: Multiply Immediate (5 * 3 = 15)
-    A = 16'sd5;
-	 B = 16'sd3;
-    Opcode = MULI; 
-    #10;
-*/ 
-    // 13. CMP: Compare Signed (Compare 10 and 20 -> A < B, sets N/L flags)
-    A = 16'sd10;
-    B = 16'sd20;
-    Opcode = CMP;
-    #10;
-
-    // 14. CMPI: Compare Immediate Signed (Compare 15 and 5 -> A > B)
-    A = 16'sd15;
-	 B = 16'sd5;
-    Opcode = CMPI;
-    #10;
-	 
-	 
-		#10;
-        // 15. CMPIU: Compare Immediate Unsigned (A = 10, B = 20 -> A < B)
-        // Expected: Sets Unsigned Less-than flag (L = 1), Zero flag (Z = 0)
-        A = 16'd10;
-        B = 16'd20;
-        Cin = 1'b0;
-        Opcode = CMPUI;
-        
-        #10;
-        // 16. CMPIU: Compare Immediate Unsigned (A = 65535, B = 5 -> A > B)
-        // Crucial Test: Verifies 65535 is treated as Unsigned (+65535), NOT Signed (-1)
-        // Expected: Sets Unsigned Less-than flag (L = 0), Zero flag (Z = 0)
-        A = 16'd65535;
-        B = 16'd5;
-        Cin = 1'b0;
-        Opcode = CMPUI;
+        Cin    = 1'b0;
 
         #10;
-        // 17. CMPIU: Compare Immediate Unsigned (A = 100, B = 100 -> A == B)
-        // Expected: Sets Zero flag (Z = 1), Unsigned Less-than flag (L = 0)
-        A = 16'd100;
-        B = 16'd100;
-        Cin = 1'b0;
-        Opcode = CMPUI;
-		  
-		  ///Tests for Logic Operators:
-		    
-		  #10;
-        // 18. AND: Bitwise AND (12 AND 10 = 8)
-        // Binary: 0000_0000_0000_1100 & 0000_0000_0000_1010 = 0000_0000_0000_1000
-        // Expected Result: C = 8 | Flags: Zero (Z = 0)
-        A = 16'd12;
-        B = 16'd10;
-        Cin = 1'b0;
-        Opcode = AND;
-		  
-		  #10;
-        // 19. AND: Bitwise AND resulting in Zero (15 AND 0 = 0)
-        // Expected Result: C = 0 | Flags: Zero (Z = 1)
-        A = 16'd15;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = AND;
-		  
-		  #10;
-        // 20. AND: Bitwise AND resulting in Ones (15 AND 15 = 15)
-        // Expected Result: C = 15 | Flags: Zero (Z = 0)
-        A = 16'd15;
-        B = 16'd15;
-        Cin = 1'b0;
-        Opcode = AND;
-		  
-		  // OR tests:
-		  #10;
-        // 21. OR: Bitwise OR (12 OR 10 = 14)
-        // Binary: 0000_0000_0000_1100 | 0000_0000_0000_1010 = 0000_0000_0000_1110
-        // Expected Result: C = 14 | Flags: Zero (Z = 0)
-        A = 16'd12;
-        B = 16'd10;
-        Cin = 1'b0;
-        Opcode = OR;
+
+        $display("");
+        $display("============================================================");
+        $display("                 STARTING ALU TESTBENCH");
+        $display("============================================================");
+        $display("");
+
+        // ========================================================
+        // ADD TESTS
+        // ========================================================
+
+        // 1. Normal addition
+        // 10 + 20 = 30
+        run_test(
+            "ADD: 10 + 20", 	// Test Name
+            16'd10,				// A
+            16'd20,				// B
+            ADD,					// OPCODE
+            1'b0,					// CIN
+            16'd30,				// Expected C
+            5'b00000				// Flags
+        );
+
+        // 2. Addition resulting in zero
+        // 0 + 0 = 0
+        run_test(
+            "ADD: 0 + 0",
+            16'd0,
+            16'd0,
+            ADD,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        // 3. Signed addition
+        // 15 + (-10) = 5
+        run_test(
+            "ADD: 15 + (-10)",
+            16'sd15,
+            -16'sd10,
+            ADD,
+            1'b0,
+            16'd5,
+            5'b00000
+        );
+
+        // 4. Positive signed overflow
+        // 32767 + 1 = -32768
+        run_test(
+            "ADD: positive overflow",
+            16'h7FFF,
+            16'h0001,
+            ADD,
+            1'b0,
+            16'h8000,
+            5'b00101
+        );
+
+        // 5. Negative signed overflow
+        // -32768 + (-1) = 32767
+        run_test(
+            "ADD: negative overflow",
+            16'h8000,
+            16'hFFFF,
+            ADD,
+            1'b0,
+            16'h7FFF,
+            5'b00100
+        );
+
+
+        // ========================================================
+        // ADDI TESTS
+        // ========================================================
+
+        run_test(
+            "ADDI: 10 + 3",
+            16'd10,
+            16'd3,
+            ADDI,
+            1'b0,
+            16'd13,
+            5'b00000
+        );
+
+        run_test(
+            "ADDI: 0 + 0",
+            16'd0,
+            16'd0,
+            ADDI,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+
+        // ========================================================
+        // ADDU TESTS
+        // ========================================================
+
+        // 65530 + 10 = 4 with carry
+        run_test(
+            "ADDU: unsigned carry",
+            16'd65530,
+            16'd10,
+            ADDU,
+            1'b0,
+            16'd4,
+            5'b10000
+        );
+
+        // FFFF + 1 = 0000 with carry
+        run_test(
+            "ADDU: FFFF + 1",
+            16'hFFFF,
+            16'h0001,
+            ADDU,
+            1'b0,
+            16'h0000,
+            5'b10010
+        );
+
+        // No carry
+        run_test(
+            "ADDU: 100 + 5",
+            16'd100,
+            16'd5,
+            ADDU,
+            1'b0,
+            16'd105,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // ADDUI TESTS
+        // ========================================================
+
+        run_test(
+            "ADDUI: 100 + 5",
+            16'd100,
+            16'd5,
+            ADDUI,
+            1'b0,
+            16'd105,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // ADDC TESTS
+        // ========================================================
+
+        // Cin = 0
+        run_test(
+            "ADDC: 10 + 20 + 0",
+            16'd10,
+            16'd20,
+            ADDC,
+            1'b0,
+            16'd30,
+            5'b00000
+        );
+
+        // Cin = 1
+        run_test(
+            "ADDC: 10 + 20 + 1",
+            16'd10,
+            16'd20,
+            ADDC,
+            1'b1,
+            16'd31,
+            5'b00000
+        );
+
+        // Carry generated
+        run_test(
+            "ADDC: FFFF + 0 + 1",
+            16'hFFFF,
+            16'h0000,
+            ADDC,
+            1'b1,
+            16'h0000,
+            5'b10010
+        );
+
+
+        // ========================================================
+        // ADDCI TESTS
+        // ========================================================
+
+        run_test(
+            "ADDCI: 10 + 2 + 1",
+            16'd10,
+            16'd2,
+            ADDCI,
+            1'b1,
+            16'd13,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // SUB TESTS
+        // ========================================================
+
+        // 20 - 5 = 15
+        run_test(
+            "SUB: 20 - 5",
+            16'd20,
+            16'd5,
+            SUB,
+            1'b0,
+            16'd15,
+            5'b00000
+        );
+
+        // 20 - 20 = 0
+        run_test(
+            "SUB: 20 - 20",
+            16'd20,
+            16'd20,
+            SUB,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        // 0 - 1 = FFFF
+        run_test(
+            "SUB: 0 - 1",
+            16'd0,
+            16'd1,
+            SUB,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+        // Positive overflow
+        // 32767 - (-1) = 32768
+        run_test(
+            "SUB: positive overflow",
+            16'h7FFF,
+            16'hFFFF,
+            SUB,
+            1'b0,
+            16'h8000,
+            5'b00101
+        );
+
+        // Negative overflow
+        // -32768 - 1 = -32769
+        run_test(
+            "SUB: negative overflow",
+            16'h8000,
+            16'h0001,
+            SUB,
+            1'b0,
+            16'h7FFF,
+            5'b00100
+        );
+
+
+        // ========================================================
+        // SUBI TESTS
+        // ========================================================
+
+        run_test(
+            "SUBI: 20 - 4",
+            16'd20,
+            16'd4,
+            SUBI,
+            1'b0,
+            16'd16,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // CMP TESTS
+        // ========================================================
+
+        // A < B
+        run_test(
+            "CMP: 10 < 20",
+            16'd10,
+            16'd20,
+            CMP,
+            1'b0,
+            16'd0,
+            5'b00001
+        );
+
+        // A > B
+        run_test(
+            "CMP: 20 > 10",
+            16'd20,
+            16'd10,
+            CMP,
+            1'b0,
+            16'd0,
+            5'b00000
+        );
+
+        // A == B
+        run_test(
+            "CMP: 10 == 10",
+            16'd10,
+            16'd10,
+            CMP,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        // Signed comparison:
+        // -1 < 1
+        run_test(
+            "CMP: signed -1 < 1",
+            16'hFFFF,
+            16'h0001,
+            CMP,
+            1'b0,
+            16'd0,
+            5'b00001
+        );
+
+        // Signed comparison:
+        // -32768 < 32767
+        run_test(
+            "CMP: signed MIN < MAX",
+            16'h8000,
+            16'h7FFF,
+            CMP,
+            1'b0,
+            16'd0,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // CMPI TESTS
+        // ========================================================
+
+        run_test(
+            "CMPI: 15 > 5",
+            16'd15,
+            16'd5,
+            CMPI,
+            1'b0,
+            16'd0,
+            5'b00000
+        );
+
+        run_test(
+            "CMPI: 15 == 15",
+            16'd15,
+            16'd15,
+            CMPI,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+
+        // ========================================================
+        // UNSIGNED COMPARE TESTS
+        // ========================================================
+
+        // 10 < 20
+        run_test(
+            "CMPUI: unsigned 10 < 20",
+            16'd10,
+            16'd20,
+            CMPUI,
+            1'b0,
+            16'd0,
+            5'b01001
+        );
+
+        // 65535 > 5
+        run_test(
+            "CMPUI: 65535 > 5",
+            16'hFFFF,
+            16'd5,
+            CMPUI,
+            1'b0,
+            16'd0,
+            5'b00000
+        );
+
+        // Equal
+        run_test(
+            "CMPUI: 100 == 100",
+            16'd100,
+            16'd100,
+            CMPUI,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        // Important signed/unsigned distinction:
+        // FFFF = -1 signed but 65535 unsigned
+        run_test(
+            "CMPUI: FFFF > 0001 unsigned",
+            16'hFFFF,
+            16'h0001,
+            CMPUI,
+            1'b0,
+            16'd0,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // AND TESTS
+        // ========================================================
+
+        run_test(
+            "AND: 12 & 10",
+            16'd12,
+            16'd10,
+            AND,
+            1'b0,
+            16'd8,
+            5'b00000
+        );
+
+        run_test(
+            "AND: 15 & 0",
+            16'd15,
+            16'd0,
+            AND,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        run_test(
+            "AND: FFFF & FFFF",
+            16'hFFFF,
+            16'hFFFF,
+            AND,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // OR TESTS
+        // ========================================================
+
+        run_test(
+            "OR: 12 | 10",
+            16'd12,
+            16'd10,
+            OR,
+            1'b0,
+            16'd14,
+            5'b00000
+        );
+
+        run_test(
+            "OR: 0 | 0",
+            16'd0,
+            16'd0,
+            OR,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        run_test(
+            "OR: FFFF | 0",
+            16'hFFFF,
+            16'h0000,
+            OR,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // XOR TESTS
+        // ========================================================
+
+        run_test(
+            "XOR: 12 ^ 10",
+            16'd12,
+            16'd10,
+            XOR,
+            1'b0,
+            16'd6,
+            5'b00000
+        );
+
+        run_test(
+            "XOR: 15 ^ 15",
+            16'd15,
+            16'd15,
+            XOR,
+            1'b0,
+            16'd0,
+            5'b00010
+        );
+
+        run_test(
+            "XOR: FFFF ^ 0000",
+            16'hFFFF,
+            16'h0000,
+            XOR,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // NOT TESTS
+        // ========================================================
+
+        run_test(
+            "NOT: ~0000",
+            16'h0000,
+            16'h0000,
+            NOT,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+        run_test(
+            "NOT: ~FFFF",
+            16'hFFFF,
+            16'h0000,
+            NOT,
+            1'b0,
+            16'h0000,
+            5'b00010
+        );
+
+        run_test(
+            "NOT: ~000F",
+            16'h000F,
+            16'h0000,
+            NOT,
+            1'b0,
+            16'hFFF0,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // LSH TESTS
+        // ========================================================
+
+        // Left
+        run_test(
+            "LSH: 5 << 2",
+            16'd5,
+            16'd2,
+            LSH,
+            1'b0,
+            16'd20,
+            5'b00000
+        );
+
+        // Right
+        run_test(
+            "LSH: 20 >> 2",
+            16'd20,
+            -16'sd2,
+            LSH,
+            1'b0,
+            16'd5,
+            5'b00000
+        );
+
+        // Shift by zero
+        run_test(
+            "LSH: shift by zero",
+            16'h1234,
+            16'd0,
+            LSH,
+            1'b0,
+            16'h1234,
+            5'b00000
+        );
+
+        // Shift by 15
+        run_test(
+            "LSH: 1 << 15",
+            16'h0001,
+            16'd15,
+            LSH,
+            1'b0,
+            16'h8000,
+            5'b00001
+        );
+
+        // Shift by 16
+        run_test(
+            "LSH: 1 << 16",
+            16'h0001,
+            16'd16,
+            LSH,
+            1'b0,
+            16'h0000,
+            5'b00010
+        );
+
+
+        // ========================================================
+        // LSHI TESTS
+        // ========================================================
+
+        run_test(
+            "LSHI: 3 << 3",
+            16'd3,
+            16'd3,
+            LSHI,
+            1'b0,
+            16'd24,
+            5'b00000
+        );
+
+        run_test(
+            "LSHI: 1 << 15",
+            16'd1,
+            16'd15,
+            LSHI,
+            1'b0,
+            16'h8000,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // ALSH TESTS
+        // ========================================================
+
+        // Arithmetic left shift
+        run_test(
+            "ALSH: 5 << 2",
+            16'sd5,
+            16'sd2,
+            ALSH,
+            1'b0,
+            16'd20,
+            5'b00000
+        );
+
+        // Arithmetic right shift positive
+        run_test(
+            "ALSH: 20 >> 2",
+            16'sd20,
+            -16'sd2,
+            ALSH,
+            1'b0,
+            16'd5,
+            5'b00000
+        );
+
+        // Arithmetic right shift negative
+        // -16 >>> 2 = -4
+        run_test(
+            "ALSH: -16 >>> 2",
+            -16'sd16,
+            -16'sd2,
+            ALSH,
+            1'b0,
+            16'hFFFC,
+            5'b00001
+        );
+
+        // -1 >>> 1 should remain -1
+        run_test(
+            "ALSH: -1 >>> 1",
+            16'hFFFF,
+            -16'sd1,
+            ALSH,
+            1'b0,
+            16'hFFFF,
+            5'b00001
+        );
+
+        // Most-negative number
+        // 8000 >>> 1 = C000
+        run_test(
+            "ALSH: 8000 >>> 1",
+            16'h8000,
+            -16'sd1,
+            ALSH,
+            1'b0,
+            16'hC000,
+            5'b00001
+        );
+
+
+        // ========================================================
+        // INVALID OPCODE TEST
+        // ========================================================
+
+        // Change this expected result if your ALU has a specific
+        // behavior for an invalid opcode.
+
+        run_test(
+            "INVALID OPCODE: FF",
+            16'h1234,
+            16'h5678,
+            8'hFF,
+            1'b0,
+            16'h0000,
+            5'b00000
+        );
+
+
+        // ========================================================
+        // RANDOMIZED ADDU TESTS
+        // ========================================================
+
+        $display("");
+        $display("============================================================");
+        $display("                RANDOMIZED ADDU TESTS");
+        $display("============================================================");
+
+        for (i = 0; i < 1000; i = i + 1) begin
+
+            A = $random;
+            B = $random;
+            Cin = $random;
+            Opcode = ADDU;
+
+            temp_result = A + B + Cin;
+
+            #1;
+
+            if (C !== temp_result[15:0]) begin
+
+                failed = failed + 1;
+
+                $display("");
+                $display("FAIL: Random ADDU test %0d", i);
+                $display("  A        = %h", A);
+                $display("  B        = %h", B);
+                $display("  Cin      = %b", Cin);
+                $display("  Expected = %h", temp_result[15:0]);
+                $display("  Actual   = %h", C);
+                $display("");
+
+            end
+            else begin
+                passed = passed + 1;
+            end
+
+        end
+
+
+        // ========================================================
+        // RANDOMIZED LOGIC TESTS
+        // ========================================================
+
+        $display("");
+        $display("============================================================");
+        $display("                RANDOMIZED LOGIC TESTS");
+        $display("============================================================");
+
+        for (i = 0; i < 1000; i = i + 1) begin
+
+            A = $random;
+            B = $random;
+            Cin = $random;
+
+            // --------------------------------------------
+            // AND
+            // --------------------------------------------
+
+            Opcode = AND;
+            #1;
+
+            expected_C = A & B;
+
+            if (C !== expected_C) begin
+                failed = failed + 1;
+                $display("FAIL: Random AND test %0d", i);
+                $display("  A=%h B=%h Expected=%h Actual=%h",
+                         A, B, expected_C, C);
+            end
+            else begin
+                passed = passed + 1;
+            end
+
+
+            // --------------------------------------------
+            // OR
+            // --------------------------------------------
+
+            Opcode = OR;
+            #1;
+
+            expected_C = A | B;
+
+            if (C !== expected_C) begin
+                failed = failed + 1;
+                $display("FAIL: Random OR test %0d", i);
+                $display("  A=%h B=%h Expected=%h Actual=%h",
+                         A, B, expected_C, C);
+            end
+            else begin
+                passed = passed + 1;
+            end
+
+
+            // --------------------------------------------
+            // XOR
+            // --------------------------------------------
+
+            Opcode = XOR;
+            #1;
+
+            expected_C = A ^ B;
+
+            if (C !== expected_C) begin
+                failed = failed + 1;
+                $display("FAIL: Random XOR test %0d", i);
+                $display("  A=%h B=%h Expected=%h Actual=%h",
+                         A, B, expected_C, C);
+            end
+            else begin
+                passed = passed + 1;
+            end
+
+
+            // --------------------------------------------
+            // NOT
+            // --------------------------------------------
+
+            Opcode = NOT;
+            #1;
+
+            expected_C = ~A;
+
+            if (C !== expected_C) begin
+                failed = failed + 1;
+                $display("FAIL: Random NOT test %0d", i);
+                $display("  A=%h Expected=%h Actual=%h",
+                         A, expected_C, C);
+            end
+            else begin
+                passed = passed + 1;
+            end
+
+        end
+
+
+        // ========================================================
+        // FINAL RESULTS
+        // ========================================================
 
         #10;
-        // 22. OR: Bitwise OR with Zero Result (0 OR 0 = 0)
-        // Expected Result: C = 0 | Flags: Zero (Z = 1)
-        A = 16'd0;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = OR;
-		  
-		  #10;
-        // 22. OR: Bitwise OR with Ones Result (1 OR 0 = 1)
-        // Expected Result: C = 1 | Flags: Zero (Z = 0)
-        A = 16'd1;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = OR;
-		  
-		  //XOR tests: 
-		  
-        #10;
-        // 23. XOR: Bitwise XOR (12 XOR 10 = 6)
-        // Binary: 0000_0000_0000_1100 ^ 0000_0000_0000_1010 = 0000_0000_0000_0110
-        // Expected Result: C = 6 | Flags: Zero (Z = 0)
-        A = 16'd12;
-        B = 16'd10;
-        Cin = 1'b0;
-        Opcode = XOR;
 
-        #10;
-        // 24. XOR: Bitwise XOR with identical values resulting in Zero (15 XOR 15 = 0)
-        // Expected Result: C = 0 | Flags: Zero (Z = 1)
-        A = 16'd15;
-        B = 16'd15;
-        Cin = 1'b0;
-        Opcode = XOR;
-		  
-		    #10;
-        // 25. XOR: Bitwise XOR with identical values resulting in Zero (15 XOR 0 = 15)
-        // Expected Result: C = 15 | Flags: Zero (Z = 0)
-        A = 16'd15;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = XOR;
-		  
-		  //Not Tests: 
-		  #10;
-        // 26. NOT: Bitwise NOT of 0 (~0 = 65535 or -1 signed)
-        // Binary: ~0000_0000_0000_0000 = 1111_1111_1111_1111
-        // Expected Result: C = 65535 (-1) | Flags: Zero (Z = 0)
-        A = 16'd0;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = NOT;
+        $display("");
+        $display("============================================================");
+        $display("                  ALU TESTBENCH COMPLETE");
+        $display("============================================================");
+        $display("Tests Passed : %0d", passed);
+        $display("Tests Failed : %0d", failed);
+        $display("============================================================");
 
-        #10;
-        // 27. NOT: Bitwise NOT of 65535 (~65535 = 0)
-        // Binary: ~1111_1111_1111_1111 = 0000_0000_0000_0000
-        // Expected Result: C = 0 | Flags: Zero (Z = 1)
-        A = 16'd65535;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = NOT;
+        if (failed == 0) begin
+            $display("RESULT: ALL TESTS PASSED!");
+        end
+        else begin
+            $display("RESULT: TESTBENCH FAILED!");
+        end
 
-        #10;
-        // 28. NOT: Bitwise NOT of a positive value (~15 = 65520 or -16 signed)
-        // Binary: ~0000_0000_0000_1111 = 1111_1111_1111_0000
-        // Expected Result: C = 65520 (-16) | Flags: Zero (Z = 0)
-        A = 16'd15;
-        B = 16'd0;
-        Cin = 1'b0;
-        Opcode = NOT;
-		  
-		  //Shift Operations tests:
-		  
-		  #10;
-        // 29. LSH: Logical Shift Left by 2 bits (5 << 2 = 20)
-        // Binary: 0000_0000_0000_0101 << 2 = 0000_0000_0001_0100
-        // Expected Result: C = 20 | Flags: Zero (Z = 0)
-        A = 16'd5;
-        B = 16'd2;
-        Cin = 1'b0;
-        Opcode = LSH;
+        $display("");
 
-        #10;
-        // 30. LSH: Logical Shift Right by 2 bits (20 >> 2 = 5)
-        // Binary: 0000_0000_0001_0100 >> 2 = 0000_0000_0000_0101
-        // Expected Result: C = 5 | Flags: Zero (Z = 0)
-        A = 16'd20;
-        B = -16'sd2;       
-        Cin = 1'b0;
-        Opcode = LSH;
+        $stop;
 
-        #10;
-        // 31. LSH: Shift completely out resulting in Zero (1 << 16 = 0)
-        // Expected Result: C = 0 | Flags: Zero (Z = 1)
-        A = 16'd1;
-        B = 16'd16;
-        Cin = 1'b0;
-        Opcode = LSH;
+    end
 
-        #10;
-        // 32. LSHI: Logical Shift Immediate Left by 3 bits (3 << 3 = 24)
-        // Binary: 0000_0000_0000_0011 << 3 = 0000_0000_0001_1000
-        // Expected Result: C = 24 | Flags: Zero (Z = 0)
-        A = 16'd3;
-        B = 16'd3;          // Immediate shift count
-        Cin = 1'b0;
-        Opcode = LSHI;
-		  
-		  //ALSH tests (Keeps signed values when shifting right). 
-		  #10;
-        // 33. ALSH: Arithmetic Shift Left Positive Value (5 <<< 2 = 20)
-        // Binary: 0000_0000_0000_0101 <<< 2 = 0000_0000_0001_0100
-        // Expected Result: C = 20 | Flags: Zero (Z = 0)
-        A = 16'sd5;
-        B = 16'sd2;
-        Cin = 1'b0; 
-        Cin = 1'b0;
-        Opcode = ALSH;
-
-        #10;
-        // 34. ALSH: Arithmetic Shift Right Positive Value (20 >>> 2 = 5)
-        // Binary: 0000_0000_0001_0100 >>> 2 = 0000_0000_0000_0101
-        // Expected Result: C = 5 | Flags: Zero (Z = 0)
-        A = 16'sd20;
-        B = -16'sd2;       // Negative shift count indicates right shift
-        Cin = 1'b0;
-        Opcode = ALSH;
-
-        #10;
-        // 35. ALSH: Arithmetic Shift Right Negative Value (-16 >>> 2 = -4)
-        // Sign Extension Check: MSB (1) is replicated into shifted bits.
-        // Binary: 1111_1111_1111_0000 >>> 2 = 1111_1111_1111_1100 (-4)
-        // Expected Result: C = -4 (65532) | Flags: Zero (Z = 0)
-        A = -16'sd16;
-        B = -16'sd2;       // Negative shift count indicates right shift
-        Cin = 1'b0;
-        Opcode = ALSH;
-		  
-		  
-    $stop;
-end
 endmodule
-
