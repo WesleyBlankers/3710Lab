@@ -1,0 +1,74 @@
+# ============================================================
+# Quartus Project .gitignore
+# ============================================================
+
+# ------------------------------------------------------------
+# Quartus-generated compilation / database files
+# ------------------------------------------------------------
+db/
+incremental_db/
+greybox_tmp/
+sim/
+output_files/
+
+# Compilation / temporary files
+*.rpt
+*.summary
+*.smsg
+*.done
+*.qws
+*.qws.bak
+*.qws*
+*.bak
+*.tmp
+*.log
+
+# Quartus database / intermediate files
+*.qdb
+*.qdb.bak
+*.qmsg
+*.pin
+*.cmp
+*.syn
+*.fit
+*.sta
+*.map
+*.asm
+*.pof
+*.sof
+
+# ------------------------------------------------------------
+# NativeLink / simulator generated files
+# ------------------------------------------------------------
+*_nativelink_simulation/
+*_nativelink/
+transcript
+transcript.*
+vsim.wlf
+*.wlf
+work/
+questa/
+modelsim.ini
+*.vstf
+
+# Questa / ModelSim generated files
+*.mpf
+*.mti
+*.bak
+*.dat
+*.ucdb
+
+# ------------------------------------------------------------
+# Quartus Programmer / JTAG generated files
+# ------------------------------------------------------------
+*.jdi
+*.jic
+*.rpd
+
+# ------------------------------------------------------------
+# Platform Designer / Qsys generated files
+# ------------------------------------------------------------
+.qsys_edit/
+qsys/
+.qsys-generated/
+ip/
