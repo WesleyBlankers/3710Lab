@@ -6,7 +6,6 @@ module flagReg(
 );
 
     input [4:0] ALUFlags;
-    input       flagEnable;
     input       clk;
     input       reset;
 

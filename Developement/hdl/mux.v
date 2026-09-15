@@ -1,4 +1,4 @@
-module Mux(
+module mux(
 
 input wire[15:0] RegFile 
 input[3:0] MUXcontrol //selctor bits

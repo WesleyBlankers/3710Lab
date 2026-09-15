@@ -4,7 +4,8 @@ module alu (
     Cin,
     Opcode,
     C,
-    Flags
+    Flags,
+	 reset
 );
 
 	`include "params.sv"
@@ -14,6 +15,7 @@ module alu (
     input  [15:0] A, B;
     input         Cin;
     input  [7:0]  Opcode;
+	 input			reset;
 
     output reg [15:0] C;
     output reg [4:0]  Flags;
@@ -24,9 +26,18 @@ module alu (
     // Flags[2] = F (Overflow)
     // Flags[1] = Z (Zero)
     // Flags[0] = N (Negative / less-than signed)
+	 
+    always @(A, B, Opcode, Cin, reset) begin
 
-    always @(A, B, Opcode, Cin) begin
+	  // Reset
+    if (reset) begin
+        C     = 16'b0;
+        Flags = 5'b0;
+    end
 
+    // Normal ALU operation
+    else begin
+	 
         // Default values
         C     = 16'b0;
         Flags = 5'b0;
@@ -212,8 +223,8 @@ module alu (
                 C     = 16'b0;
                 Flags = 5'b0;
             end
-
         endcase
     end
+end
 
 endmodule
