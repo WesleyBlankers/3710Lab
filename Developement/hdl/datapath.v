@@ -10,10 +10,13 @@ module datapath(
     input  wire [7:0]  Opcode,
     input  wire        Cin,
 
-    output wire [4:0]  aluFLAGOutput,
-
+	 output wire [4:0] aluFLAGOutput,
+	 output wire [15:0] aluResult,
+	 
+	 
     input  wire        clk,
     input  wire        reset
+	 
 );
 
     // ============================================================
@@ -59,7 +62,7 @@ module datapath(
     // ============================================================
 
     regfile_2D_memory regfile (
-        .ALUBus(aluBUSOutput),
+        .ALUBus(ALUResult),
 
         .r0(r0),
         .r1(r1),
@@ -91,7 +94,7 @@ module datapath(
 
 	reg [15:0] selectedA;
 
-	always @(selectA, reset) begin
+	always @(*) begin
 		 if (reset)
 			  selectedA = 16'd0;
 		 else begin
@@ -125,7 +128,7 @@ module datapath(
 
 	reg [15:0] selectedB;
 
-	always @(selectB, reset) begin
+	always @(*) begin
 		 if (reset)
 			  selectedB = 16'd0;
 		 else begin
@@ -180,8 +183,9 @@ module datapath(
     // ALU Result Bus
     // ============================================================
 
-    assign aluBUSOutput = ALUResult;
 
+    
+	 assign aluResult = ALUResult;
 
     // ============================================================
     // Flag Register
