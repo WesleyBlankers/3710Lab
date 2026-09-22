@@ -139,4 +139,5 @@ set_global_assignment -name EDA_TEST_BENCH_FILE ../hdl/flagReg.v -section_id fib
 set_global_assignment -name EDA_TEST_BENCH_FILE ../hdl/datapath.v.bak -section_id fib_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE ../hdl/datapath.v -section_id fib_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE ../hdl/alu.v -section_id fib_tb
+set_global_assignment -name VERILOG_FILE ../hdl/mux.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
