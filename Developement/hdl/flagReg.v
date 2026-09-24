@@ -1,26 +1,16 @@
 module flagReg(
-    ALUFlags,
-    FlagsOut,
-    clk,
-    reset
+    input [4:0] ALUFlags,
+    input       clk,
+    input       reset,
+    output reg [4:0] FlagsOut
 );
 
-    input [4:0] ALUFlags;
-    input       clk;
-    input       reset;
-
-    output [4:0] FlagsOut;
-
-    reg [4:0] flags;
-
-    always @(posedge clk)
+    always @(posedge clk or posedge reset)
     begin
         if (reset)
-            flags <= 5'b00000;
+            FlagsOut <= 5'b00000;
         else
-            flags <= ALUFlags;
+            FlagsOut <= ALUFlags;
     end
-
-    assign FlagsOut = flags;
 
 endmodule

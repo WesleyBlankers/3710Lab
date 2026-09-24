@@ -11,13 +11,12 @@ module datapath(
 
 	 output wire [4:0] aluFLAGOutput,
 	 output wire [15:0] aluResult,
-	 
-	 
+	 	 
     input  wire        clk,
     input  wire        reset
 	 
 );
-
+	
     // ============================================================
     // Register File Outputs
     // ============================================================

@@ -18,6 +18,7 @@ module fib_tb;
     // DUT outputs
     wire [4:0]  aluFLAGOutput;
     wire [15:0] aluResult;
+	 wire [15:0] r15Value;
 
     // FSM State Registers
     reg [3:0] state, nextState;
@@ -33,6 +34,7 @@ module fib_tb;
         .Cin(Cin),
         .aluFLAGOutput(aluFLAGOutput),
         .aluResult(aluResult),
+		  .r15Value(r15Value),
         .clk(clk),
         .reset(reset)
     );
