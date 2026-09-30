@@ -3,7 +3,7 @@
 
 module bram
 #(
-    parameter DATA_WIDTH = 48, parameter ADDR_WIDTH = 10, parameter MEM_FILE = ""
+    parameter DATA_WIDTH = 16, parameter ADDR_WIDTH = 10, parameter MEM_FILE = ""
 )
 (
     input [(DATA_WIDTH-1):0] data_a, data_b,
@@ -14,10 +14,10 @@ module bram
 
 	 reg [DATA_WIDTH-1:0] ram[2**ADDR_WIDTH-1:0];
 
-    // Initialize BRAM contents (Must be surrounded by initial block)
+    // Initialize BRAM contents (Must be surrounded by initial block), currently uses binary input format.
     initial begin
         if (MEM_FILE != "")
-            $readmemh(MEM_FILE, mem);
+            $readmemb(MEM_FILE, ram);
     end
 
 	// Port A 
