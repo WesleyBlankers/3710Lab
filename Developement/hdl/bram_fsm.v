@@ -1,34 +1,55 @@
-module bram_fsm(
+module bram_fsm #(
+    parameter DATA_WIDTH = 16,
+    parameter ADDR_WIDTH = 10,
+    parameter MEM_FILE   = "../src/bram.mem"
+)(
+    input  wire [9:0] SW,
+    input  wire [3:0] KEYS,
+    input  wire       clk,
 
+    output wire [6:0] HEX0,
+    output wire [6:0] HEX1,
+    output wire [6:0] HEX2,
+    output wire [6:0] HEX3,
+    output wire [6:0] HEX4,
+    output wire [6:0] HEX5
 );
 
+    // ------------------------------------------------------------
+    // BRAM interface
+    // ------------------------------------------------------------
+    wire [DATA_WIDTH-1:0] data_a0;
+    wire [DATA_WIDTH-1:0] data_b0;
+    wire [ADDR_WIDTH-1:0] addr_a0;
+    wire [ADDR_WIDTH-1:0] addr_b0;
+    wire                  we_a0;
+    wire                  we_b0;
+    wire [DATA_WIDTH-1:0] q_a0;
+    wire [DATA_WIDTH-1:0] q_b0;
 
-`timescale 1ns/1ps
+    reg [DATA_WIDTH-1:0] write_data;
+    reg [ADDR_WIDTH-1:0] write_addr;
+    reg [2:0] operation;
 
-module bram_tb;
+    assign data_a0 = write_data;
+    assign addr_a0 = write_addr;
 
-    // Parameters
-    parameter DATA_WIDTH = 16;
-    parameter ADDR_WIDTH = 10;
-    parameter MEM_FILE = "../../../src/bram.mem";
+    // Follow switches while idle.
+    // Once an operation starts, keep reading the captured address.
+    assign addr_b0 = (state == STATE_IDLE) ? SW : write_addr;
 
-    // Clock
-    reg clk;
+    assign data_b0 = {DATA_WIDTH{1'b0}};
 
-    // BRAM signals
-    reg [DATA_WIDTH-1:0] data_a0, data_b0;
-    reg [ADDR_WIDTH-1:0] addr_a0, addr_b0;
-    reg we_a0, we_b0;
-    wire [DATA_WIDTH-1:0] q_a0, q_b0;
+    // BRAM writes whenever FSM is in WRITE state.
+    assign we_a0 = (state == STATE_WRITE);
 
-    // ============================================================
-    // BRAM DUT
-    // ============================================================
+    assign we_b0 = 1'b0;
+
     bram #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH),
         .MEM_FILE(MEM_FILE)
-    ) bram (
+    ) bram_inst (
         .data_a(data_a0),
         .data_b(data_b0),
         .addr_a(addr_a0),
@@ -40,138 +61,176 @@ module bram_tb;
         .q_b(q_b0)
     );
 
-    // ============================================================
-    // Clock generation
-    // ============================================================
-    initial begin
-        clk = 1'b0;
-        forever #5 clk = ~clk;
+    // ------------------------------------------------------------
+    // Synchronize the active-low pushbuttons
+    // ------------------------------------------------------------
+    reg [3:0] keys_meta;
+    reg [3:0] keys_sync;
+
+    always @(posedge clk) begin
+        keys_meta <= KEYS;
+        keys_sync <= keys_meta;
     end
 
-    // ============================================================
-    // Task: Read a memory location
-    // ============================================================
-    task read_memory;
-        input [ADDR_WIDTH-1:0] address;
-        begin
-            // Set address on port B
-            addr_b0 = address;
-            we_b0   = 1'b0;
+    // ------------------------------------------------------------
+    // FSM
+    //
+    // KEY0: +1
+    // KEY1: +10
+    // KEY2: -10
+    // KEY3:  0
+    //
+    // Keys are active-low.
+    // ------------------------------------------------------------
+    localparam STATE_IDLE       = 3'd0;
+    localparam STATE_READ       = 3'd1;
+    localparam STATE_MODIFY     = 3'd2;
+    localparam STATE_WRITE      = 3'd3;
+    localparam STATE_WAIT       = 3'd4;
 
-            // Wait for BRAM read
-            @(posedge clk);
-            #1;
+    localparam OP_ADD1  = 3'd0;
+    localparam OP_ADD10 = 3'd1;
+    localparam OP_SUB10 = 3'd2;
+    localparam OP_RESET = 3'd3;
 
-            $display(
-                "READ  Address = %04d   Value = %06d",
-                address,
-                q_b0
-            );
-        end
-    endtask
+    reg [2:0] state;
 
-    // ============================================================
-    // Task: Write a memory location
-    // ============================================================
-    task write_memory;
-        input [ADDR_WIDTH-1:0] address;
-        input [DATA_WIDTH-1:0] value;
-        begin
-            // Set address, data, and write enable on port A
-            addr_a0 = address;
-            data_a0 = value;
-            we_a0   = 1'b1;
+    always @(posedge clk) begin
 
-            // Write occurs on clock edge
-            @(posedge clk);
-            #1;
+        case (state)
 
-            // Disable writing
-            we_a0 = 1'b0;
+            STATE_IDLE: begin
 
-            $display(
-                "WRITE Address = %04d   Value = %06d",
-                address,
-                value
-            );
-        end
-    endtask
+                if (!keys_sync[0]) begin
+                    write_addr <= SW;
+                    operation <= OP_ADD1;
+                    state <= STATE_READ;
+                end
 
-    // ============================================================
-    // Test sequence
-    // ============================================================
-    initial begin
+                else if (!keys_sync[1]) begin
+                    write_addr <= SW;
+                    operation <= OP_ADD10;
+                    state <= STATE_READ;
+                end
 
-        // Initialize signals
-        data_a0 = 16'd0;
-        data_b0 = 16'd0;
+                else if (!keys_sync[2]) begin
+                    write_addr <= SW;
+                    operation <= OP_SUB10;
+                    state <= STATE_READ;
+                end
 
-        addr_a0 = 10'd0;
-        addr_b0 = 10'd0;
+                else if (!keys_sync[3]) begin
+                    write_addr <= SW;
+                    operation <= OP_RESET;
+                    state <= STATE_READ;
+                end
 
-        we_a0 = 1'd0;
-        we_b0 = 1'd0;
+            end
 
 
-        // Give BRAM time to initialize
-        #10;
-
-        $display("");
-        $display("========================================");
-        $display(" INITIAL MEMORY CONTENTS");
-        $display("========================================");
-
-        // Read each initialized location from bram.mem
-        read_memory(10'd0);
-        read_memory(10'd1);
-        read_memory(10'd37);
-        read_memory(10'd38);
-        read_memory(10'd1021);
-        read_memory(10'd1022);
-        read_memory(10'd1023);
+            STATE_READ: begin
+                // BRAM performs synchronous read here.
+                state <= STATE_MODIFY;
+            end
 
 
-        // ========================================================
-        // Modify some memory locations
-        // ========================================================
+            STATE_MODIFY: begin
 
-        $display("");
-        $display("========================================");
-        $display(" MODIFYING MEMORY");
-        $display("========================================");
+                case (operation)
 
-        write_memory(10'd0, 16'd512);
-        write_memory(10'd1, 16'd1024);
-        write_memory(10'd37, 16'd65000);
-        write_memory(10'd38, 16'd9);
-		  write_memory(10'd1021, 16'd1021);
-        write_memory(10'd1022, 16'd1022);
-        write_memory(10'd1023, 16'd1023);
+                    OP_ADD1:
+                        write_data <= q_b0 + 16'd1;
+
+                    OP_ADD10:
+                        write_data <= q_b0 + 16'd10;
+
+                    OP_SUB10:
+                        write_data <= q_b0 - 16'd10;
+
+                    OP_RESET:
+                        write_data <= 16'd0;
+
+                    default:
+                        write_data <= q_b0;
+
+                endcase
+
+                state <= STATE_WRITE;
+
+            end
 
 
-        // ========================================================
-        // Read modified memory
-        // ========================================================
+            STATE_WRITE: begin
+                // write_data is already prepared.
+                // we_a0 is high because state == STATE_WRITE.
+                state <= STATE_WAIT;
+            end
 
-        $display("");
-        $display("========================================");
-        $display(" MEMORY CONTENTS AFTER MODIFICATION");
-        $display("========================================");
 
-        read_memory(10'd0);
-        read_memory(10'd1);
-        read_memory(10'd37);
-        read_memory(10'd38);
-        read_memory(10'd1021);
-        read_memory(10'd1022);
-        read_memory(10'd1023);
+            STATE_WAIT: begin
 
-        $display("");
-        $display("========================================");
-        $display(" TEST COMPLETE");
-        $display("========================================");
+                if (&keys_sync)
+                    state <= STATE_IDLE;
 
-        $finish;
+            end
+
+
+            default: begin
+                state <= STATE_IDLE;
+            end
+
+        endcase
+
     end
+
+    // ------------------------------------------------------------
+    // Convert current BRAM value to six decimal digits.
+    // ------------------------------------------------------------
+    wire [23:0] bcd_digits;
+
+    double_dabble #(
+        .INPUT_WIDTH(DATA_WIDTH)
+    ) converter (
+        .binary_in(q_b0),
+        .bcd_out(bcd_digits)
+    );
+
+    // ------------------------------------------------------------
+    // Six active-low 7-segment displays.
+    //
+    // bcd_digits:
+    // [23:20] = most significant digit
+    // ...
+    // [3:0]   = least significant digit
+    // ------------------------------------------------------------
+    HexTo7Seg hex0 (
+        .hex_input(bcd_digits[3:0]),
+        .segment_display(HEX0)
+    );
+
+    HexTo7Seg hex1 (
+        .hex_input(bcd_digits[7:4]),
+        .segment_display(HEX1)
+    );
+
+    HexTo7Seg hex2 (
+        .hex_input(bcd_digits[11:8]),
+        .segment_display(HEX2)
+    );
+
+    HexTo7Seg hex3 (
+        .hex_input(bcd_digits[15:12]),
+        .segment_display(HEX3)
+    );
+
+    HexTo7Seg hex4 (
+        .hex_input(bcd_digits[19:16]),
+        .segment_display(HEX4)
+    );
+
+    HexTo7Seg hex5 (
+        .hex_input(bcd_digits[23:20]),
+        .segment_display(HEX5)
+    );
 
 endmodule
