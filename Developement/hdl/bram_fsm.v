@@ -4,10 +4,10 @@ module bram_fsm #(
     parameter MEM_FILE   = "../src/bram.mem"
 )(
     input  wire        clk,
-    input  wire        reset,
     input  wire [3:0]  KEYS,
+	 input  wire [9:0]  SW,
 
-    output wire        LED,
+    output wire [2:0]  LED,
     output wire [6:0]  HEX0,
     output wire [6:0]  HEX1,
     output wire [6:0]  HEX2,
@@ -15,38 +15,6 @@ module bram_fsm #(
     output wire [6:0]  HEX4,
     output wire [6:0]  HEX5
 );
-
-    // ============================================================
-    // KEY0 synchronizer / edge detector
-    //
-    // KEY0 is active-low.
-    //
-    // CLOCK_50 remains the actual FPGA clock. A KEY0 press
-    // generates a one-clock pulse called key0_press.
-    // ============================================================
-
-    reg key0_meta;
-    reg key0_sync;
-    reg key0_prev;
-
-    wire key0_press;
-
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
-            key0_meta <= 1'b1;
-            key0_sync <= 1'b1;
-            key0_prev <= 1'b1;
-        end
-        else begin
-            key0_meta <= KEYS[0];
-            key0_sync <= key0_meta;
-            key0_prev <= key0_sync;
-        end
-    end
-
-    // KEY0 goes from 1 -> 0 when pressed.
-    // Generate a one-clock pulse on that transition.
-    assign key0_press = key0_prev & ~key0_sync;
 
 
     // ============================================================
@@ -56,7 +24,7 @@ module bram_fsm #(
     reg  [DATA_WIDTH-1:0] data_a0;
     reg  [DATA_WIDTH-1:0] data_b0;
 
-    reg  [ADDR_WIDTH-1:0] addr_a0;
+    wire  [ADDR_WIDTH-1:0] addr_a0;
     reg  [ADDR_WIDTH-1:0] addr_b0;
 
     reg                   we_a0;
@@ -81,96 +49,39 @@ module bram_fsm #(
         .q_b(q_b0)
     );
 
-
-    // ============================================================
-    // FSM STATES
-    //
-    // Each state requires ONE KEY0 press to advance.
-    //
-    //        KEY0       KEY0        KEY0        KEY0        KEY0
-    //
-    // IDLE ------> READ ------> CAPTURE ------> MODIFY ------> WRITE
-    //                                                           |
-    //                                                           |
-    //                                                        KEY0
-    //                                                           |
-    //                                                           v
-    //                                                         DONE
-    //                                                           |
-    //                                                        KEY0
-    //                                                           |
-    //                                                           v
-    //                                                         IDLE
-    //
-    // ============================================================
-
-    localparam [2:0] S_IDLE    = 3'd0;
-    localparam [2:0] S_READ    = 3'd1;
-    localparam [2:0] S_CAPTURE = 3'd2;
-    localparam [2:0] S_MODIFY  = 3'd3;
-    localparam [2:0] S_WRITE   = 3'd4;
-    localparam [2:0] S_DONE    = 3'd5;
+    localparam [2:0] S_READ    = 3'd0;
+    localparam [2:0] S_MODIFY  = 3'd1;
+    localparam [2:0] S_WRITE   = 3'd2;
 
     reg [2:0] state;
 
     reg [DATA_WIDTH-1:0] read_value;
     reg [DATA_WIDTH-1:0] write_value;
-
-
+	 
+	 assign addr_a0 = SW[9:0];
+	 
     // ============================================================
     // FSM SEQUENTIAL LOGIC
-    //
-    // The FSM ONLY changes state when key0_press is asserted.
     // ============================================================
 
-    always @(posedge clk or posedge reset) begin
-
-        if (reset) begin
-
-            state       <= S_IDLE;
-            read_value  <= {DATA_WIDTH{1'b0}};
-            write_value <= {DATA_WIDTH{1'b0}};
-
-        end
-
-        else if (key0_press) begin
+    always @(negedge KEYS[0]) begin
 
             case (state)
 
                 // ------------------------------------------------
                 // STATE 0
-                // ------------------------------------------------
-                S_IDLE: begin
-                    state <= S_READ;
-                end
-
-
-                // ------------------------------------------------
-                // STATE 1
-                //
-                // BRAM address is presented in this state.
-                // The BRAM gets one CLOCK_50 cycle to perform
-                // its synchronous read.
-                // ------------------------------------------------
-                S_READ: begin
-                    state <= S_CAPTURE;
-                end
-
-
-                // ------------------------------------------------
-                // STATE 2
                 //
                 // q_a0 now contains the value read from BRAM.
                 // Capture it.
                 // ------------------------------------------------
-                S_CAPTURE: begin
+                S_READ: begin
                     read_value <= q_a0;
                     state <= S_MODIFY;
                 end
 
 
                 // ------------------------------------------------
-                // STATE 3
+                // STATE 1
                 //
                 // Increment the value by 1.
                 // ------------------------------------------------
@@ -181,114 +92,63 @@ module bram_fsm #(
 
 
                 // ------------------------------------------------
-                // STATE 4
+                // STATE 2
                 //
                 // The BRAM write happens while this state is
                 // active.
                 // ------------------------------------------------
                 S_WRITE: begin
-                    state <= S_DONE;
+                    state <= S_READ;
                 end
-
-
-                // ------------------------------------------------
-                // STATE 5
-                //
-                // Operation is complete.
-                // ------------------------------------------------
-                S_DONE: begin
-                    state <= S_IDLE;
-                end
-
 
                 default: begin
-                    state <= S_IDLE;
+                    state <= S_READ;
                 end
 
             endcase
-
-        end
     end
 
 
     // ============================================================
     // BRAM CONTROL
-    //
-    // Currently operates on address 0, matching your original
-    // bram_fsm.v.
     // ============================================================
 
     always @(*) begin
 
         // Defaults
-        data_a0 = {DATA_WIDTH{1'b0}};
-        data_b0 = {DATA_WIDTH{1'b0}};
-
-        addr_a0 = {ADDR_WIDTH{1'b0}};
-        addr_b0 = {ADDR_WIDTH{1'b0}};
+        data_a0 = 16'd0;
+        data_b0 = 16'd0;
 
         we_a0 = 1'b0;
         we_b0 = 1'b0;
 
-
         case (state)
-
-            // ----------------------------------------------------
-            // IDLE
-            // ----------------------------------------------------
-            S_IDLE: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
-            end
-
 
             // ----------------------------------------------------
             // READ
             //
-            // Address 0 is presented to the BRAM.
+            // Address on switches is presented to the BRAM.
             // ----------------------------------------------------
             S_READ: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
             end
-
-
-            // ----------------------------------------------------
-            // CAPTURE
-            // ----------------------------------------------------
-            S_CAPTURE: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
-            end
-
 
             // ----------------------------------------------------
             // MODIFY
             // ----------------------------------------------------
             S_MODIFY: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
             end
-
 
             // ----------------------------------------------------
             // WRITE
             //
-            // Write the modified value back to address 0.
+            // Write the modified value back to address on switches.
             // ----------------------------------------------------
             S_WRITE: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
                 data_a0 = write_value;
                 we_a0   = 1'b1;
             end
 
-
-            // ----------------------------------------------------
-            // DONE
-            // ----------------------------------------------------
-            S_DONE: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
-            end
-
-
             default: begin
-                addr_a0 = {ADDR_WIDTH{1'b0}};
             end
 
         endcase
@@ -349,10 +209,10 @@ module bram_fsm #(
 
     // ============================================================
     // DEBUG LED
-    //
-    // LED is ON while the FSM is in the WRITE state.
     // ============================================================
 
-    assign LED = (state == S_WRITE);
+	 assign LED[2] = (state == S_READ);
+	 assign LED[1] = (state == S_MODIFY);
+	 assign LED[0] = (state == S_WRITE);
 
 endmodule
