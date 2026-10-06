@@ -3,14 +3,17 @@ module datapath(
     input  wire [3:0]  selectB,
 
     input  wire [15:0] registerEnables,
-
     input  wire        immediateEnable,
+	 input  wire		  Alu_Mux_Cntrl,
+	 input  wire		  Data_From_Mem,
 
     input  wire [15:0] immediate,
     input  wire [7:0]  Opcode,
 
 	 output wire [4:0] aluFLAGOutput,
 	 output wire [15:0] aluResult,
+	 output wire [15:0] Ra,
+	 output wire [15:0] Rb,
 	 	 
     input  wire        clk,
     input  wire        reset

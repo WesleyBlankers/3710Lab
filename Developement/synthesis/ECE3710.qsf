@@ -59,22 +59,6 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME bram_tb -section_id bram_
 set_global_assignment -name EDA_TEST_BENCH_FILE ../simulation/bram_tb.v -section_id bram_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE ../src/bram.mem -section_id bram_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE ../hdl/bram.v -section_id bram_tb
-set_global_assignment -name VERILOG_FILE ../hdl/double_dabble.v
-set_global_assignment -name VERILOG_FILE ../hdl/bram.v
-set_global_assignment -name VERILOG_FILE ../hdl/top.v
-set_global_assignment -name VERILOG_FILE ../simulation/alu_tb.v
-set_global_assignment -name VERILOG_FILE ../hdl/regfile.v
-set_global_assignment -name SYSTEMVERILOG_FILE ../hdl/params.sv
-set_global_assignment -name VERILOG_FILE ../hdl/HexTo7Seg.v
-set_global_assignment -name VERILOG_FILE ../hdl/datapath.v
-set_global_assignment -name VERILOG_FILE ../hdl/alu.v
-set_global_assignment -name VERILOG_FILE ../hdl/regfile_2D_memory.v
-set_global_assignment -name VERILOG_FILE ../hdl/flagReg.v
-set_global_assignment -name VERILOG_FILE ../simulation/fib_tb.v
-set_global_assignment -name VERILOG_FILE ../hdl/mux.v
-set_global_assignment -name VERILOG_FILE ../simulation/bram_tb.v
-set_global_assignment -name MIF_FILE ../src/bram.mem
-set_global_assignment -name VERILOG_FILE ../hdl/bram_fsm.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
@@ -122,3 +106,20 @@ set_location_assignment PIN_W16 -to LED[1]
 set_location_assignment PIN_V17 -to LED[2]
 set_location_assignment PIN_V16 -to LED[0]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name VERILOG_FILE ../simulation/bram_tb.v
+set_global_assignment -name VERILOG_FILE ../hdl/double_dabble.v
+set_global_assignment -name VERILOG_FILE ../hdl/bram.v
+set_global_assignment -name VERILOG_FILE ../hdl/top.v
+set_global_assignment -name VERILOG_FILE ../simulation/alu_tb.v
+set_global_assignment -name VERILOG_FILE ../hdl/regfile.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../hdl/params.sv
+set_global_assignment -name VERILOG_FILE ../hdl/HexTo7Seg.v
+set_global_assignment -name VERILOG_FILE ../hdl/datapath.v
+set_global_assignment -name VERILOG_FILE ../hdl/alu.v
+set_global_assignment -name VERILOG_FILE ../hdl/regfile_2D_memory.v
+set_global_assignment -name VERILOG_FILE ../hdl/flagReg.v
+set_global_assignment -name VERILOG_FILE ../simulation/fib_tb.v
+set_global_assignment -name VERILOG_FILE ../hdl/mux.v
+set_global_assignment -name MIF_FILE ../src/bram.mem
+set_global_assignment -name VERILOG_FILE ../hdl/pc.v
+set_global_assignment -name VERILOG_FILE ../hdl/cpu.v
