@@ -83,6 +83,10 @@ module top(
 
         .immediateEnable(immediateEnable),
         .immediate(immediate),
+		  
+		  .Alu_Mux_Cntrl(1'b0),
+		  .Data_From_Mem(16'b0),
+		  .flagEn(1'b1),
 
         .Opcode(Opcode),
 

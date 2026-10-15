@@ -5,7 +5,8 @@ module datapath(
     input  wire [15:0] registerEnables,
     input  wire        immediateEnable,
 	 input  wire		  Alu_Mux_Cntrl,
-	 input  wire		  Data_From_Mem,
+	 input  wire [15:0] Data_From_Mem,
+	 input  wire 		  flagEn,
 
     input  wire [15:0] immediate,
     input  wire [7:0]  Opcode,
@@ -61,8 +62,11 @@ module datapath(
     // Register File
     // ============================================================
 
+	 wire [15:0] writeBackData; 
+	 assign writeBackData = Alu_Mux_Cntrl ? Data_From_Mem : ALUResult;
+	 
     regfile_2D_memory regfile (
-        .ALUBus(ALUResult),
+        .ALUBus(writeBackData),
 
         .r0(r0),
         .r1(r1),
@@ -143,6 +147,9 @@ module datapath(
 			 .MUXcontrol(selectB),
 			 .MUXoutput(selectedB)
 		);
+		
+		assign Ra = selectedA;
+		assign Rb = selectedB;
 
 
     // ============================================================
@@ -182,6 +189,7 @@ module datapath(
     flagReg flag_register (
         .ALUFlags(ALUFlags),
         .FlagsOut(aluFLAGOutput),
+		  .flagEn(flagEn),
         .clk(clk),
         .reset(reset)
     );
