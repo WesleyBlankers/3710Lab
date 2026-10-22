@@ -24,12 +24,13 @@ module cpu_fsm (
 	 reg isRType;
 	 
     // State Encoding
-    localparam S0_FETCH      = 3'b000;
-    localparam S1_DECODE     = 3'b001;
-    localparam S2_EXEC_WB 	  = 3'b010;
-	 localparam S3_MEM_ACCESS = 3'b011;
-    localparam S4_LOAD_WB    = 3'b100;
-	 localparam S5_BRANCH	  = 3'b101;
+    localparam S0_FETCH      			= 3'b000;
+    localparam S1_DECODE     			= 3'b001;
+    localparam S2_EXEC_WB 	  			= 3'b010;
+	 localparam S3_MEM_WB 	  			= 3'b011;
+    localparam S4_LOAD_MEM_FETCH    = 3'b100;
+	 localparam S5_LOAD_WB				= 3'b101;
+	 localparam S6_BRANCH	  			= 3'b110;
 	
     // Opcode Extraction from Instruction (bits 15:12 assuming 4-bit opcode in 16-bit word)
     wire [3:0] opcode = Dout[15:12];
@@ -132,9 +133,9 @@ endtask
                 if (isRType || isIType)
                     next_state = S2_EXEC_WB;
 					 else if (isLoad || isStore)
-						  next_state = S3_MEM_ACCESS;
+						  next_state = S3_MEM_WB;
 					 else if (isBranch) 
-						  next_state = S5_BRANCH;
+						  next_state = S6_BRANCH;
                 else
                     next_state = S0_FETCH; // Default fallback
             end
@@ -143,18 +144,18 @@ endtask
                 next_state = S0_FETCH;
             end
 				
-		      S3_MEM_ACCESS: begin
+		      S3_MEM_WB: begin
 					 if (isLoad)
-						  next_state = S4_LOAD_WB;
+						  next_state = S4_LOAD_MEM_FETCH;
 					 else
 					     next_state = S0_FETCH;
 				end
 				
-				S4_LOAD_WB: begin
+				S4_LOAD_MEM_FETCH: begin
 					 next_state = S0_FETCH;
 			   end
 				
-				S5_BRANCH: begin
+				S6_BRANCH: begin
 				    next_state = S0_FETCH;
 				end
 				
@@ -281,7 +282,7 @@ endtask
 						flagEn = 1'b1;
 					end
 					
-				S3_MEM_ACCESS: begin
+				S3_MEM_WB: begin
 							// Memory access stage for LOAD and STORE
 					 PCen          = isStore; // Advance PC after STORE
 					 Ren           = 16'b0;   // Disable register writes
@@ -294,7 +295,7 @@ endtask
 					 Rsrc          = Dout[3:0];
 				end
 				
-				S4_LOAD_WB: begin
+				S4_LOAD_MEM_FETCH: begin
 					 // Write loaded memory data to destination register
 					 PCen          = 1'b1; // Advance PC after LOAD
 					 Ren           = 16'b1 << Dout[11:8]; // Enable destination register
@@ -307,7 +308,7 @@ endtask
 					 Rsrc          = Dout[3:0];
 				end
 				
-				S5_BRANCH:begin
+				S6_BRANCH:begin
 				    // Branch execution stage
 					 PCen          = 1'b1; // Update PC
 					 PC_Mux_Cntrl  = conditionMet; // 1 = branch target, 0 = PC + 1
