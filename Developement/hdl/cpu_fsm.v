@@ -21,6 +21,11 @@ module cpu_fsm (
 
 
 
+//TODO: S5 logic, tests for states, implement load/store/branch
+
+
+
+
 	 reg isRType;
 	 
     // State Encoding
@@ -132,10 +137,12 @@ endtask
                 // Transition to Execute + Writeback if the instruction is R-type
                 if (isRType || isIType)
                     next_state = S2_EXEC_WB;
-					 else if (isLoad || isStore)
+					 else if (isStore)
 						  next_state = S3_MEM_WB;
 					 else if (isBranch) 
 						  next_state = S6_BRANCH;
+					 else if (isLoad)
+						  next_state = S4_LOAD_MEM_FETCH;	
                 else
                     next_state = S0_FETCH; // Default fallback
             end
@@ -152,8 +159,11 @@ endtask
 				end
 				
 				S4_LOAD_MEM_FETCH: begin
-					 next_state = S0_FETCH;
+					 next_state = S5_LOAD_WB;
 			   end
+				
+				S5_LOAD_WB: begin
+					 next_state = S0_FETCH;
 				
 				S6_BRANCH: begin
 				    next_state = S0_FETCH;
@@ -307,6 +317,9 @@ endtask
 					 Rdest         = Dout[11:8];
 					 Rsrc          = Dout[3:0];
 				end
+				
+				S5_LOAD_WB: begin
+				//TODO
 				
 				S6_BRANCH:begin
 				    // Branch execution stage
