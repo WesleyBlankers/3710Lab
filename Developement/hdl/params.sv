@@ -72,9 +72,9 @@ parameter SNXB   = 8'b0100_0010;
 parameter ZRXB   = 8'b0100_0110;
 
 // Control Flow
-parameter Scond  = 8'b0100_1101;
-parameter Bcond  = 8'b1100_XXXX;
-parameter Jcond  = 8'b0100_1100;
+parameter SCOND  = 8'b0100_1101;
+parameter BCOND  = 8'b1100_XXXX;
+parameter JCOND  = 8'b0100_1100;
 parameter JAL    = 8'b0100_1000;
 
 // System / Special

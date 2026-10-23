@@ -1,339 +1,201 @@
+
 module cpu_fsm (
     input  wire        clk,
-    input  wire        reset,          // Global reset
-    input  wire [15:0] Dout,           // Fetched instruction from memory
-    input  wire [4:0]  Flags,          // Flags from ALU/Status register
-	 
-    output reg         PCen,           // Program Counter Enable
-	 output reg			  PC_Mux_Cntrl,	//Select PC increment or branch target
-	 output reg			  IRen,				// Instruction Register Enable
-    output reg  [15:0] Ren,            // Register Write Enable
-    output reg         Ien,           // Register/Immediate select 1 = immediate, 0 = register
-    output reg         We,             // Memory Write Enable
-    output reg         ALU_Mux_Cntrl,  // ALU Mux Control
-    output reg         LSCntrl,         // Load/Store Control
-	 output reg 		  flagEn,
-	 output reg	 [3:0]  Rdest,
-	 output reg  [3:0]  Rsrc,
-	 output reg	 [7:0]  Opcode, 
-	 output reg	 [15:0]  Immediate
+    input  wire        reset,
+
+    input  wire [15:0] Instruction,
+    input  wire [4:0]  FlagsRegister,
+
+    output reg         PCEnable,
+    output reg         PCMultiplexorControl,
+    output reg         InstructionRegisterEnable,
+    output reg  [15:0] RegisterEnables,
+    output reg         ImmediateMutiplexorControl,
+    output reg         BramWriteEnable,
+    output reg         ALUMultiplexorControl,
+    output reg         LoadStoreMultiplexorControl,
+
+    output reg  [3:0]  Rdest,
+    output reg  [3:0]  Rsrc,
+    output wire [7:0]  Opcode,
+    output wire [8:0]  Immediate
 );
 
+    wire RegisterInstruction;
+    wire ImmediateInstruction;
+    wire StoreInstruction;
+    wire LoadInstruction;
+    wire BranchInstruction;
 
+    assign Opcode    = {Instruction[15:12], Instruction[7:4]};
+    assign Immediate = {1'b0, Instruction[7:0]};
 
-//TODO: S5 logic, tests for states, implement load/store/branch
+    // Decode the instruction type
+    cpu_decoder decoder (
+        .Opcode (Opcode),
+        .Rtype  (RegisterInstruction),
+        .Itype  (ImmediateInstruction),
+        .Stype  (StoreInstruction),
+        .Ltype  (LoadInstruction),
+        .BJtype (BranchInstruction)
+    );
 
+    // State encoding
+    localparam FETCH  = 3'd0;
+    localparam DECODE = 3'd1;
+    localparam RI_TYPE = 3'd2;
+    localparam STORE  = 3'd3;
+    localparam LOAD_1 = 3'd4;
+    localparam LOAD_2 = 3'd5;
+    localparam BRANCH = 3'd6;
 
+    reg [2:0] currentState, nextState;
+    reg conditionMet;
 
-
-	 reg isRType;
-	 
-    // State Encoding
-    localparam S0_FETCH      			= 3'b000;
-    localparam S1_DECODE     			= 3'b001;
-    localparam S2_EXEC_WB 	  			= 3'b010;
-	 localparam S3_MEM_WB 	  			= 3'b011;
-    localparam S4_LOAD_MEM_FETCH    = 3'b100;
-	 localparam S5_LOAD_WB				= 3'b101;
-	 localparam S6_BRANCH	  			= 3'b110;
-	
-    // Opcode Extraction from Instruction (bits 15:12 assuming 4-bit opcode in 16-bit word)
-    wire [3:0] opcode = Dout[15:12];
-
-    reg [2:0] current_state, next_state;
-	 
-	 wire [7:0] concat_opcode = {Dout[15:12], Dout[7:4]};
-	 
-	 wire isLoad = (concat_opcode == 8'b0100_0000); // LOAD
-	 wire isStore = (concat_opcode == 8'b0100_0100); // STORE
-	 wire isBranch = (opcode == 4'b1100);
-	 
-	 wire isShiftImm = (opcode == 4'b1000) && (Dout[7:5] == 3'b000); //LSHI
-	 
-	 wire isIType =
-		(opcode == 4'b0001) || // ANDI
-		(opcode == 4'b0010) || // ORI
-		(opcode == 4'b0011) || // XORI
-		(opcode == 4'b0101) || // ADDI
-		(opcode == 4'b0110) || // ADDUI
-		(opcode == 4'b0111) || // ADDCI
-		(opcode == 4'b1001) || // SUBI
-		(opcode == 4'b1011) ||// CMPI
-		(opcode == 4'b1101) || // MOVI
-		(opcode == 4'b1111) || // LUI
-		isShiftImm;				  // LSHI
-
-	 task check_rtype;
-        input  [7:0] opcode_in;
-        begin
-        case (opcode_in)
-            // R-Type Arithmetic Instructions
-            8'b0000_0101, // ADD
-            8'b0000_0110, // ADDU
-            8'b0000_0111, // ADDC
-            8'b0000_1001, // SUB     
-            8'b0000_1011, // CMP
-
-            // R-Type Logical Instructions
-            8'b0000_0001, // AND
-            8'b0000_0010, // OR
-            8'b0000_0011, // XOR
-
-            // R-Type Move and Shift Instructions
-            8'b0000_1101, // MOV
-            8'b1000_0100, // LSH
-            8'b1000_0110: // ALSH
-                isRType = 1'b1;
-
-            default:
-                isRType = 1'b0;
+    // Evaluate branch condition
+    always @(*) begin
+        case (Instruction[11:8])
+            4'h0: conditionMet =  FlagsRegister[1];                 // EQ
+            4'h1: conditionMet = ~FlagsRegister[1];                 // NE
+            4'h2: conditionMet =  FlagsRegister[4];                 // CS
+            4'h3: conditionMet = ~FlagsRegister[4];                 // CC
+            4'h4: conditionMet =  FlagsRegister[3];                 // HI
+            4'h5: conditionMet = ~FlagsRegister[3];                 // LS
+            4'h6: conditionMet =  FlagsRegister[0];                 // GT
+            4'h7: conditionMet = ~FlagsRegister[0];                 // LE
+            4'h8: conditionMet =  FlagsRegister[2];                 // FS
+            4'h9: conditionMet = ~FlagsRegister[2];                 // FC
+            4'hA: conditionMet = ~FlagsRegister[3] & ~FlagsRegister[1]; // LO
+            4'hB: conditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS
+            4'hC: conditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT
+            4'hD: conditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE
+            4'hE: conditionMet = 1'b1;                              // UC
+            default: conditionMet = 1'b0;
         endcase
     end
-endtask
 
-	
-	 reg conditionMet;
-
-	 always @(*) begin
-		  case (Dout[11:8])
-			   4'h0: conditionMet = Flags[1];               // EQ
-				4'h1: conditionMet = ~Flags[1];              // NE
-				4'h2: conditionMet = Flags[4];               // CS
-				4'h3: conditionMet = ~Flags[4];              // CC
-				4'h4: conditionMet = Flags[3];               // HI
-				4'h5: conditionMet = ~Flags[3];              // LS
-				4'h6: conditionMet = Flags[0];               // GT
-				4'h7: conditionMet = ~Flags[0];              // LE
-				4'h8: conditionMet = Flags[2];               // FS
-				4'h9: conditionMet = ~Flags[2];              // FC
-				4'hA: conditionMet = ~Flags[3] & ~Flags[1];  // LO
-				4'hB: conditionMet = Flags[3] | Flags[1];    // HS
-				4'hC: conditionMet = ~Flags[0] & ~Flags[1];  // LT
-				4'hD: conditionMet = Flags[0] | Flags[1];    // GE
-				4'hE: conditionMet = 1'b1;                   // UC
-				default: conditionMet = 1'b0;                // Never
-		  endcase
-    end
-	 
-    // State Register (Sequential Logic)
+    // State register
     always @(posedge clk or posedge reset) begin
         if (reset)
-            current_state <= S0_FETCH;
+            currentState <= FETCH;
         else
-            current_state <= next_state;
+            currentState <= nextState;
     end
 
-    // Next State Logic (Combinational)
+    // Next-state logic
     always @(*) begin
-	 
-    check_rtype(concat_opcode);
+        nextState = FETCH;
 
-        case (current_state)
-            S0_FETCH: begin
-                next_state = S1_DECODE;
+        case (currentState)
+            FETCH: begin
+                nextState = DECODE;
             end
 
-            S1_DECODE: begin
-                // Transition to Execute + Writeback if the instruction is R-type
-                if (isRType || isIType)
-                    next_state = S2_EXEC_WB;
-					 else if (isStore)
-						  next_state = S3_MEM_WB;
-					 else if (isBranch) 
-						  next_state = S6_BRANCH;
-					 else if (isLoad)
-						  next_state = S4_LOAD_MEM_FETCH;	
+            DECODE: begin
+                if (RegisterInstruction || ImmediateInstruction)
+                    nextState = RI_TYPE;
+                else if (StoreInstruction)
+                    nextState = STORE;
+                else if (LoadInstruction)
+                    nextState = LOAD_1;
+                else if (BranchInstruction)
+                    nextState = BRANCH;
                 else
-                    next_state = S0_FETCH; // Default fallback
+                    nextState = FETCH;
             end
-				
-            S2_EXEC_WB: begin
-                next_state = S0_FETCH;
+
+            RI_TYPE: begin
+                nextState = FETCH;
             end
-				
-		      S3_MEM_WB: begin
-					 if (isLoad)
-						  next_state = S4_LOAD_MEM_FETCH;
-					 else
-					     next_state = S0_FETCH;
-				end
-				
-				S4_LOAD_MEM_FETCH: begin
-					 next_state = S5_LOAD_WB;
-			   end
-				
-				S5_LOAD_WB: begin
-					 next_state = S0_FETCH;
-				
-				S6_BRANCH: begin
-				    next_state = S0_FETCH;
-				end
-				
-            default: next_state = S0_FETCH;
+
+            STORE: begin
+                nextState = FETCH;
+            end
+
+            LOAD_1: begin
+                nextState = LOAD_2;
+            end
+
+            LOAD_2: begin
+                nextState = FETCH;
+            end
+
+            BRANCH: begin
+                nextState = FETCH;
+            end
+
+            default: begin
+                nextState = FETCH;
+            end
         endcase
     end
 
-    // Output Logic (Combinational)
+    // Output logic
     always @(*) begin
-        // Default Outputs (De-asserted)
-        PCen          = 1'b0;
-		  PC_Mux_Cntrl  = 1'b0;
-		  IRen			 = 1'b0;
-        Ren           = 16'b0;
-        Ien           = 1'bx;
-        We            = 1'b0;
-        ALU_Mux_Cntrl = 1'bx;
-        LSCntrl       = 1'bx;
-		  flagEn        = 1'b0;
-		  Rdest 			 = 4'bx;
-		  Rsrc 			 = 4'bx;
-		  Opcode        = 8'bx;
-		  Immediate     = 16'b0;
+        // Default outputs
+        PCEnable                       = 1'b0;
+        PCMultiplexorControl           = 1'b0;
+        InstructionRegisterEnable      = 1'b0;
+        RegisterEnables                = 16'b0;
+        ImmediateMutiplexorControl     = 1'b0;
+        BramWriteEnable                = 1'b0;
+        ALUMultiplexorControl           = 1'b0;
+        LoadStoreMultiplexorControl    = 1'b0;
 
-        case (current_state)
-            S0_FETCH: begin
-                // Fetch Stage: All control signals remain disabled
-		  PCen          = 1'b0;
-        Ren           = 16'b0;
-        Ien           = 1'bx;
-        We            = 1'b0;
-        ALU_Mux_Cntrl = 1'bx;
-        LSCntrl       = 1'b0;
-		  Rdest 			 = 4'bx;
-		  Rsrc 			 = 4'bx;
-		  Opcode        = 8'bx;
-		  Immediate     = 16'b0;
-               
+        Rdest = 4'bxxxx;
+        Rsrc  = 4'bxxxx;
+
+        case (currentState)
+            FETCH: begin
+                // Fetch stage
             end
 
-            S1_DECODE: begin
-                // Decode Stage: Waiting for opcode evaluation
-					 PCen          = 1'b0;
-					 IRen			   = 1'b1;
-                Ren           = 16'b0;
-                Ien           = 1'bx;
-                We            = 1'b0;
-                ALU_Mux_Cntrl = 1'b0;
-                LSCntrl       = 1'b0;
-					 Rdest 			= 4'bx;
-					 Rsrc 			= 4'bx;
-					 Immediate     = 16'b0;
-					 Opcode        = concat_opcode;
-					 
-					 if (!(isRType || isIType ||
-						  isLoad || isStore || isBranch))
-						  PCen = 1'b1;
+            DECODE: begin
+                // Decode stage
             end
 
-            S2_EXEC_WB: begin
-                // Execute + Writeback Stage for R-type instruction
-                PCen          = 1'b1; // Advance PC to next instruction
-                Ren           = 16'b1 << Dout[11:8]; // Enable destination register 
-                Ien          = isIType; // 1 = immediate, 0 = register
-                We            = 1'b0; // Disable memory write
-                ALU_Mux_Cntrl = 1'b0; // Select ALU output to write to regfile
-                LSCntrl       = 1'b0; // Drive MAR from PC (+1) path
-					 
-					 Rdest         = Dout[11:8];
-					 Rsrc 			= Dout[3:0];
-					 
-					 if (isIType && !isShiftImm)
-						  Opcode = {opcode, 4'b0000};
-					 else
-						  Opcode = concat_opcode;
-						  
-					 if (concat_opcode == 8'b0000_1101)
-						  Rdest = Dout[3:0];
-					 
-					 if (isShiftImm) begin
-						  Immediate = {{11{Dout[4]}}, Dout[4:0]};
-					 end
-					 
-					 else if (isIType) begin
-						case (opcode)
-						// Zero-extended immediate
-						4'b0001, // ANDI
-						4'b0010, // ORI
-						4'b0011, // XORI
-						4'b1101, // MOVI
-						4'b1111: //LUI
-						Immediate = {8'b0, Dout[7:0]};
+            RI_TYPE: begin
+                PCEnable = 1'b1;
+                RegisterEnables = 16'b1 << Instruction[11:8];
+                ImmediateMutiplexorControl = ImmediateInstruction;
 
-						// Sign-extended immediate
-						default:
-							Immediate = {{8{Dout[7]}}, Dout[7:0]};
-					endcase
-				end
-				
-				
-					 // CMP and CMPI update flags without reg writeback
-					 if ((concat_opcode == 8'b0000_1011) || (isIType && opcode == 4'b1011)) begin
-						  Ren = 16'b0;
-					end	  
-					
-					    // R-type instructions that update flags 
-					case (concat_opcode)
-					
-						  // Arithmetic
-						  8'b0000_0101, // ADD
-						  8'b0000_0111, // ADDC
-						  8'b0000_1001, // SUB
-						  8'b0000_1011: // CMP
-						  flagEn = 1'b1;
+                Rdest = Instruction[11:8];
+                Rsrc  = Instruction[3:0];
+            end
 
-                    default: ;
-					endcase
-    			
-					// I-type instructions that update flags
-					if (isIType && ((opcode == 4'b0101) || // ADDI
-						(opcode == 4'b0111) || // ADDCI
-						(opcode == 4'b1001) || // SUBI
-						(opcode == 4'b1011)))  // CMPI
-						flagEn = 1'b1;
-					end
-					
-				S3_MEM_WB: begin
-							// Memory access stage for LOAD and STORE
-					 PCen          = isStore; // Advance PC after STORE
-					 Ren           = 16'b0;   // Disable register writes
-					 Ien           = 1'b0;
-					 We            = isStore; // Write memory only for STORE
-					 ALU_Mux_Cntrl = 1'b0;
-					 LSCntrl       = 1'b1;    // Select register-based memory address
+            STORE: begin
+                PCEnable = 1'b1;
+                BramWriteEnable = 1'b1;
+                LoadStoreMultiplexorControl = 1'b1;
 
-					 Rdest         = Dout[11:8];
-					 Rsrc          = Dout[3:0];
-				end
-				
-				S4_LOAD_MEM_FETCH: begin
-					 // Write loaded memory data to destination register
-					 PCen          = 1'b1; // Advance PC after LOAD
-					 Ren           = 16'b1 << Dout[11:8]; // Enable destination register
-					 Ien           = 1'b0;
-					 We            = 1'b0; // Disable memory write
-					 ALU_Mux_Cntrl = 1'b1; // Select memory data for writeback
-					 LSCntrl       = 1'b0; // Select PC for instruction fetch
+                Rdest = Instruction[11:8];
+                Rsrc  = Instruction[3:0];
+            end
 
-					 Rdest         = Dout[11:8];
-					 Rsrc          = Dout[3:0];
-				end
-				
-				S5_LOAD_WB: begin
-				//TODO
-				
-				S6_BRANCH:begin
-				    // Branch execution stage
-					 PCen          = 1'b1; // Update PC
-					 PC_Mux_Cntrl  = conditionMet; // 1 = branch target, 0 = PC + 1
-					 Ren           = 16'b0; // Disable register writes
-					 Ien           = 1'b0;
-					 We            = 1'b0; // Disable memory writes
-					 ALU_Mux_Cntrl = 1'b0;
-					 LSCntrl       = 1'b0; // Select PC for instruction fetch
+            LOAD_1: begin
+                PCEnable = 1'b1;
+                InstructionRegisterEnable = 1'b1; // Unclear if this should be in the first stage or second stage.
+                LoadStoreMultiplexorControl = 1'b1;
 
-					 // Sign-extend branch displacement
-					 Immediate = {{8{Dout[7]}}, Dout[7:0]};
-				end
+                Rdest = Instruction[11:8];
+                Rsrc  = Instruction[3:0];
+            end
+
+            LOAD_2: begin
+                RegisterEnables = 16'b1 << Instruction[11:8];
+                ALUMultiplexorControl = 1'b1;
+            end
+
+            BRANCH: begin
+                // TODO: Use conditionMet to decide whether
+                // the branch should update the PC.
+                PCEnable = 1'b1;
+                PCMultiplexorControl = 1'b1;
+            end
+
+            default: begin
+                // Keep default outputs deasserted
+            end
         endcase
     end
 

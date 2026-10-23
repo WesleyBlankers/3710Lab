@@ -9,35 +9,32 @@ module cpu #(
 
 
 // Global wires
-wire [15:0] Dout; // Connects the BRAM module to FSM and Datapath.
-wire IRen;
-wire [15:0] fsmInstr;
+wire [15:0] Dout; // Connects the BRAM module to the Instruction Register
+wire Instruction;
+wire InstructionRegisterEnable;
 
 
 // Instruction register
 
-reg [15:0] IR ; // Register holds the last instruction from Dout.
-
+reg [15:0] InstructionRegister ; // Register holds the last instruction from Dout.
 
 always @(posedge clk or posedge reset) begin
 	if (reset)
-		IR <= 16'b0;
-	else if (IRen)
-		IR <= Dout;
+		InstructionRegister <= 16'b0;
+	else if (InstructionRegisterEnable)
+		InstructionRegister <= Dout;
 end
 
-assign fsmInstr = IRen ? Dout : IR;
+assign Instruction = InstructionRegisterEnable ? Dout : InstructionRegister;
 
 // FSM wires
-wire PCen; // Enables program counter advancement. (Either PC+1 or PC+Displacement)
-wire PC_Mux_Cntrl;
-wire [15:0] Ren; // Register enables 
-wire Ien;
-wire We;
-wire LSCntrl;
-wire Alu_Mux_Cntrl;
-wire flagEn;
-wire [7:0] Opcode;
+wire PCEnable;
+wire PCMultiplexorControl;
+wire [15:0] RegisterEnables;
+wire ImmediateMutiplexorControl;
+wire BramWriteEnable;
+wire LoadStoreMultiplexorControl;
+wire ALUMultiplexorControl;
 wire [15:0] Immediate;
 
 // Datapath wires
@@ -45,16 +42,17 @@ wire [15:0] Ra;
 wire [15:0] Rb;
 wire [3:0] Rsrc;
 wire [3:0] Rdest;
-wire [4:0] Flags; // Register containing most recent flags from the ALU/Datapath
+wire [4:0] FlagsRegister; // Register containing most recent Flags from the ALU/Datapath
 wire [15:0] aluResult;
 
 // PC wires
 wire [15:0] PCout;
 wire [15:0] PCin;
-wire [15:0] memAddress; 
 
-assign memAddress = LSCntrl ? Rb : PCout;
-assign PCin = PC_Mux_Cntrl ? (PCout + Immediate) : (PCout + 16'd1);
+wire [15:0] MemoryAddress;
+
+assign MemoryAddress = LoadStoreMultiplexorControl ? Rb : PCout;
+assign PCin = PCMultiplexorControl ? (PCout + Immediate) : (PCout + 16'd1);
 
 
 bram #(
@@ -64,9 +62,9 @@ bram #(
     ) memory (
         .data_a(Ra),
         .data_b({DATA_WIDTH{1'b0}}),
-        .addr_a(memAddress[ADDR_WIDTH-1:0]),
+        .addr_a(MemoryAddress[ADDR_WIDTH-1:0]),
         .addr_b({ADDR_WIDTH{1'b0}}),
-        .we_a(We),
+        .we_a(BramWriteEnable),
         .we_b(1'b0),
         .clk(clk),
         .q_a(Dout),
@@ -78,22 +76,21 @@ bram #(
     // ============================================================
 
     datapath datapath (
-        .selectA(Rdest),
-        .selectB(Rsrc),
-        .registerEnables(Ren),
-        .immediateEnable(Ien),
-		  .Alu_Mux_Cntrl(Alu_Mux_Cntrl),
+        .selectA(Rsrc),
+        .selectB(Rdest),
+        .registerEnables(RegisterEnables),
+        .immediateEnable(ImmediateMutiplexorControl),
+		  .ALUMultiplexorControl(ALUMultiplexorControl),
 		  .Data_From_Mem(Dout),
         .immediate(Immediate),
 
         .Opcode(Opcode),
-		  .flagEn(flagEn),
 
-        .aluFLAGOutput(Flags),
+        .aluFLAGOutput(FlagsRegister),
         .aluResult(aluResult),
 		  
 		  .Ra(Ra),
-		  .Rb(Rb), 
+		  .Rb(Rb),
 		  
         .clk(clk),
         .reset(reset)
@@ -103,18 +100,17 @@ cpu_fsm fsm (
 			.clk(clk),
 			.reset(reset),
 			
-			.Dout(fsmInstr),
-			.Flags(Flags),
+			.Instruction(Instruction),
+			.FlagsRegister(FlagsRegister),
 			
-			.PCen(PCen),
-			.PC_Mux_Cntrl(PC_Mux_Cntrl),
-			.IRen(IRen),
-			.Ren(Ren),
-			.Ien(Ien),
-			.We(We),
-			.ALU_Mux_Cntrl(Alu_Mux_Cntrl),
-			.LSCntrl(LSCntrl),
-			.flagEn(flagEn),
+			.PCEnable(PCEnable),
+			.PCMultiplexorControl(PCMultiplexorControl),
+			.InstructionRegisterEnable(InstructionRegisterEnable),
+			.RegisterEnables(RegisterEnables),
+			.ImmediateMutiplexorControl(ImmediateMutiplexorControl),
+			.BramWriteEnable(BramWriteEnable),
+			.ALUMultiplexorControl(ALUMultiplexorControl),
+			.LoadStoreMultiplexorControl(LoadStoreMultiplexorControl),
 			
 			.Rdest(Rdest),
 			.Rsrc(Rsrc),
@@ -124,7 +120,7 @@ cpu_fsm fsm (
 );
 
 pc pc (
-			.PCen(PCen),
+			.PCEnable(PCEnable),
 			.PCin(PCin),
 			.clk(clk),
 			.reset(reset),

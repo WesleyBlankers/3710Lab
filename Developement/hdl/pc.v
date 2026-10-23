@@ -1,5 +1,5 @@
 module pc(
-input      		PCen,
+input      		PCEnable,
 input [15:0]	PCin,
 input 			clk,
 input       	reset,
@@ -10,7 +10,7 @@ output reg [15:0]	PCout
     begin
         if (reset)
             PCout <= 16'd0;
-        else if (PCen)
+        else if (PCEnable)
             PCout <= PCin;
 	   end
 		

@@ -4,9 +4,8 @@ module datapath(
 
     input  wire [15:0] registerEnables,
     input  wire        immediateEnable,
-	 input  wire		  Alu_Mux_Cntrl,
+	 input  wire		  ALUMultiplexorControl,
 	 input  wire [15:0] Data_From_Mem,
-	 input  wire 		  flagEn,
 
     input  wire [15:0] immediate,
     input  wire [7:0]  Opcode,
@@ -63,7 +62,7 @@ module datapath(
     // ============================================================
 
 	 wire [15:0] writeBackData; 
-	 assign writeBackData = Alu_Mux_Cntrl ? Data_From_Mem : ALUResult;
+	 assign writeBackData = ALUMultiplexorControl ? Data_From_Mem : ALUResult;
 	 
     regfile_2D_memory regfile (
         .ALUBus(writeBackData),
@@ -189,7 +188,6 @@ module datapath(
     flagReg flag_register (
         .ALUFlags(ALUFlags),
         .FlagsOut(aluFLAGOutput),
-		  .flagEn(flagEn),
         .clk(clk),
         .reset(reset)
     );
