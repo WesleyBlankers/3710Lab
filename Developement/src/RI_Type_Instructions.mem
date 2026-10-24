@@ -1,0 +1,10 @@
+// Memory initialization assignmnents for bram.
+// NOTE: All @N indices require hexadecimal format. As shown below.
+0000000000000000   		// This is address 0. 	Value = 0.
+0000000000000001   		// This is address 1. 	Value = 1.
+@25 0000000000100101   	// This is address 37. 	Value = 37.
+@26 0000000000100110   	// This is address 38. 	Value = 38.
+@3FD 0000000000001111	// This is address 1021. 	Value = 15.
+@3FE 0000000000011111	// This is address 1022. 	Value = 31.
+@3FF 0000000000111111	// This is address 1023. 	Value = 63.
+
