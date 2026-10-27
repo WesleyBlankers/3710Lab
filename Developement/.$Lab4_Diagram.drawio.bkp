@@ -167,14 +167,13 @@
         <mxCell id="Aqh_Kt6O5roy_oXwYpkx-159" edge="1" parent="1" source="0KXpeFuBb0a8N3xrBZSL-111" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;jumpStyle=none;labelBackgroundColor=none;strokeColor=#E07A5F;fontColor=default;" target="Aqh_Kt6O5roy_oXwYpkx-86">
           <mxGeometry relative="1" x="-0.3636" as="geometry">
             <Array as="points">
-              <mxPoint x="1305" y="1150" />
-              <mxPoint x="1510" y="1150" />
-              <mxPoint x="1510" y="470" />
+              <mxPoint x="1520" y="1150" />
+              <mxPoint x="1520" y="470" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="Aqh_Kt6O5roy_oXwYpkx-166" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=none;fontColor=#393C56;align=center;" value="&lt;font style=&quot;font-size: 70px;&quot;&gt;&lt;b style=&quot;&quot;&gt;CPU Design and Control Flow&lt;/b&gt;&lt;/font&gt;" vertex="1">
-          <mxGeometry height="95" width="1360" x="150" y="-5" as="geometry" />
+          <mxGeometry height="95" width="1370" x="150" y="-5" as="geometry" />
         </mxCell>
         <mxCell id="0KXpeFuBb0a8N3xrBZSL-1" connectable="0" parent="1" style="group;rounded=0;labelBackgroundColor=none;fontColor=#393C56;" value="" vertex="1">
           <mxGeometry height="240" width="470" x="440" y="200" as="geometry" />

@@ -2,15 +2,15 @@ module datapath(
     input  wire [3:0]  selectA,
     input  wire [3:0]  selectB,
 
-    input  wire [15:0] registerEnables,
-    input  wire        immediateEnable,
+    input  wire [15:0] RegisterEnables,
+    input  wire        ImmediateMutiplexorControl,
 	 input  wire		  ALUMultiplexorControl,
-	 input  wire [15:0] Data_From_Mem,
+	 input  wire [15:0] BramReadValue,
 
-    input  wire [15:0] immediate,
+    input  wire [15:0] Immediate,
     input  wire [7:0]  Opcode,
 
-	 output wire [4:0] aluFLAGOutput,
+	 output wire [4:0]  FlagsRegister,
 	 output wire [15:0] aluResult,
 	 output wire [15:0] Ra,
 	 output wire [15:0] Rb,
@@ -61,11 +61,11 @@ module datapath(
     // Register File
     // ============================================================
 
-	 wire [15:0] writeBackData; 
-	 assign writeBackData = ALUMultiplexorControl ? Data_From_Mem : ALUResult;
+	 wire [15:0] ALUBus; 
+	 assign ALUBus = ALUMultiplexorControl ? BramReadValue : ALUResult;
 	 
     regfile_2D_memory regfile (
-        .ALUBus(writeBackData),
+        .ALUBus(ALUBus),
 
         .r0(r0),
         .r1(r1),
@@ -84,7 +84,7 @@ module datapath(
         .r14(r14),
         .r15(r15),
 
-        .regEnable(registerEnables),
+        .regEnable(RegisterEnables),
         .clk(clk),
         .reset(reset)
     );
@@ -156,8 +156,8 @@ module datapath(
     // ============================================================
 
     assign ALUA = selectedA;
-    assign ALUB = immediateEnable ? immediate : selectedB;
-	 assign Cin = aluFLAGOutput[4];
+    assign ALUB = ImmediateMutiplexorControl ? Immediate : selectedB;
+	 assign Cin = FlagsRegister[4];
 
 
     // ============================================================
@@ -187,7 +187,7 @@ module datapath(
 
     flagReg flag_register (
         .ALUFlags(ALUFlags),
-        .FlagsOut(aluFLAGOutput),
+        .FlagsOut(FlagsRegister),
         .clk(clk),
         .reset(reset)
     );

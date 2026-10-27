@@ -18,7 +18,7 @@ module cpu_fsm (
     output reg  [3:0]  Rdest,
     output reg  [3:0]  Rsrc,
     output wire [7:0]  Opcode,
-    output wire [8:0]  Immediate
+    output wire [7:0]  Immediate
 );
 
     wire RegisterInstruction;
@@ -28,7 +28,7 @@ module cpu_fsm (
     wire BranchInstruction;
 
     assign Opcode    = {Instruction[15:12], Instruction[7:4]};
-    assign Immediate = {1'b0, Instruction[7:0]};
+    assign Immediate = Instruction[7:0];
 
     // Decode the instruction type
     cpu_decoder decoder (
@@ -187,9 +187,7 @@ module cpu_fsm (
             end
 
             BRANCH: begin
-                // TODO: Use conditionMet to decide whether
-                // the branch should update the PC.
-                PCEnable = 1'b1;
+                PCEnable = conditionMet;
                 PCMultiplexorControl = 1'b1;
             end
 
