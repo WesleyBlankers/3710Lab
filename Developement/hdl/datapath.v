@@ -16,9 +16,12 @@ module datapath(
 	 output wire [15:0] Rb,
 	 	 
     input  wire        clk,
-    input  wire        reset
+    input  wire        reset,
+	 output wire [15:0] R15Out
 	 
 );
+
+	 assign R15Out = r15;
 	
     // ============================================================
     // Register File Outputs

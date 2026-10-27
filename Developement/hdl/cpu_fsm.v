@@ -1,37 +1,55 @@
-
 module cpu_fsm (
-    input  wire        clk,
-    input  wire        reset,
+    input  wire        clk,       // System clock
+    input  wire        reset,     // Active-high asynchronous reset
 
-    input  wire [15:0] Instruction,
-    input  wire [4:0]  FlagsRegister,
+    input  wire [15:0] Instruction,   // Instruction currently presented to the FSM
+    input  wire [4:0]  FlagsRegister,  // ALU status flags: C, L, F, Z, N
 
-    output reg         PCEnable,
-    output reg         PCMultiplexorControl,
-    output reg         InstructionRegisterEnable,
-	 output reg			  InstructionRegisterMultiplexorControl,
-    output reg  [15:0] RegisterEnables,
-    output reg         ImmediateMutiplexorControl,
-    output reg         BramWriteEnable,
-    output reg         ALUMultiplexorControl,
-    output reg         LoadStoreMultiplexorControl,
+    // Program counter control
+    output reg         PCEnable,                    // Enables the PC to update
+    output reg         PCMultiplexorControl,         // Selects PC increment or branch displacement
 
-    output reg  [3:0]  Rdest,
-    output reg  [3:0]  Rsrc,
-    output wire [7:0]  Opcode,
-    output wire [7:0]  Immediate
+    // Instruction register control
+    output reg         InstructionRegisterEnable,   // Enables the instruction register to capture memory data
+    output reg         InstructionRegisterMultiplexorControl, // Selects which instruction source is used
+
+    // Register file and datapath control
+    output reg  [15:0] RegisterEnables,              // One-hot register write enables
+    output reg         ImmediateMutiplexorControl,   // Selects immediate or register operand
+    output reg         ALUMultiplexorControl,        // Selects the appropriate ALU result/data source
+
+    // Memory control
+    output reg         BramWriteEnable,              // Enables a BRAM write
+    output reg         LoadStoreMultiplexorControl,  // Selects a data-memory address instead of the PC
+
+    // Instruction fields passed to the datapath
+    output reg  [3:0]  Rdest,    // Destination register index
+    output reg  [3:0]  Rsrc,     // Source register index
+    output wire [7:0]  Opcode,   // Decoded operation code
+    output wire [7:0]  Immediate // Immediate value or branch displacement
 );
 
+    // ------------------------------------------------------------
+    // Instruction decoding
+    // ------------------------------------------------------------
+
+    // Signals indicating which instruction class the current
+    // instruction belongs to.
     wire RegisterInstruction;
     wire ImmediateInstruction;
     wire StoreInstruction;
     wire LoadInstruction;
     wire BranchInstruction;
 
-    assign Opcode    = {Instruction[15:12], Instruction[7:4]};
+    // Extract the opcode from the instruction fields.
+    // This concatenation must match the instruction encoding
+    // defined by the ISA.
+    assign Opcode = {Instruction[15:12], Instruction[7:4]};
+
+    // Extract the low eight bits as the immediate/displacement.
     assign Immediate = Instruction[7:0];
 
-    // Decode the instruction type
+    // Determine the instruction class from the opcode.
     cpu_decoder decoder (
         .Opcode (Opcode),
         .Rtype  (RegisterInstruction),
@@ -41,41 +59,68 @@ module cpu_fsm (
         .BJtype (BranchInstruction)
     );
 
-    // State encoding
-    localparam FETCH  	= 3'd0;
-    localparam DECODE 	= 3'd1;
-    localparam RI_TYPE 	= 3'd2;
-    localparam STORE  	= 3'd3;
-    localparam LOAD_1 	= 3'd4;
-    localparam LOAD_2 	= 3'd5;
-    localparam BRANCH 	= 3'd6;
+    // ------------------------------------------------------------
+    // FSM state encoding
+    // ------------------------------------------------------------
 
-    reg [2:0] currentState, nextState;
+    // Three bits are sufficient to represent the seven states.
+    localparam FETCH   = 3'd0;  // Fetch instruction from memory
+    localparam DECODE  = 3'd1;  // Determine instruction type
+    localparam RI_TYPE = 3'd2;  // Execute register/immediate operation
+    localparam STORE   = 3'd3;  // Write data to memory
+    localparam LOAD_1  = 3'd4;  // Initiate memory read for a load
+    localparam LOAD_2  = 3'd5;  // Write loaded data into a register
+    localparam BRANCH  = 3'd6;  // Evaluate and execute a branch
+
+    // currentState stores the active state.
+    // nextState is calculated by the combinational next-state logic.
+    reg [2:0] currentState;
+    reg [2:0] nextState;
+
+    // Indicates whether the current conditional branch should be taken.
     reg conditionMet;
 
-    // Evaluate branch condition
+
+    // ------------------------------------------------------------
+    // Branch-condition evaluation
+    // ------------------------------------------------------------
+
+    // Flag bit assignments:
+    // FlagsRegister[4] = C: Carry
+    // FlagsRegister[3] = L: Unsigned less-than
+    // FlagsRegister[2] = F: Overflow
+    // FlagsRegister[1] = Z: Zero
+    // FlagsRegister[0] = N: Negative / signed less-than
+    //
+    // Instruction[11:8] selects the branch condition.
+    // Verify these condition definitions against the ISA specification.
     always @(*) begin
         case (Instruction[11:8])
-            4'h0: conditionMet =  FlagsRegister[1];                 		// EQ
-            4'h1: conditionMet = ~FlagsRegister[1];                 		// NE
-            4'h2: conditionMet =  FlagsRegister[4];                 		// CS
-            4'h3: conditionMet = ~FlagsRegister[4];                 		// CC
-            4'h4: conditionMet =  FlagsRegister[3];                 		// HI
-            4'h5: conditionMet = ~FlagsRegister[3];                 		// LS
-            4'h6: conditionMet =  FlagsRegister[0];                 		// GT
-            4'h7: conditionMet = ~FlagsRegister[0];                 		// LE
-            4'h8: conditionMet =  FlagsRegister[2];                 		// FS
-            4'h9: conditionMet = ~FlagsRegister[2];                 		// FC
-            4'hA: conditionMet = ~FlagsRegister[3] & ~FlagsRegister[1]; // LO
-            4'hB: conditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS
-            4'hC: conditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT
-            4'hD: conditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE
-            4'hE: conditionMet = 1'b1;                             		// UC
+            4'h0: conditionMet =  FlagsRegister[1];                 		// EQ: Equal, Z = 1
+            4'h1: conditionMet = ~FlagsRegister[1];                 		// NE: Not Equal, Z = 0
+            4'h2: conditionMet =  FlagsRegister[4];                 		// CS: Carry Set, C = 1 
+            4'h3: conditionMet = ~FlagsRegister[4];                 		// CC: Carry Clear, C = 0
+            4'h4: conditionMet =  FlagsRegister[3];                 		// HI: Higher than, L = 1
+            4'h5: conditionMet = ~FlagsRegister[3];                 		// LS: Lower than or Same as, L = 0
+            4'h6: conditionMet =  FlagsRegister[0];                 		// GT: Greater than, N = 1
+            4'h7: conditionMet = ~FlagsRegister[0];                 		// LE: Less than or Equal, N = 0
+            4'h8: conditionMet =  FlagsRegister[2];                 		// FS: Flag Set, F = 1
+            4'h9: conditionMet = ~FlagsRegister[2];                 		// FC: Flag Clear, F = 0
+            4'hA: conditionMet = ~FlagsRegister[3] & ~FlagsRegister[1]; // LO: Lower than, L = 0 and Z = 0
+            4'hB: conditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS: Higher than or Same as, L = 0 or Z = 1
+            4'hC: conditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT: Less than, N = 0 and Z = 0
+            4'hD: conditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE: Greater than or Equal, N = 1 or Z = 1
+            4'hE: conditionMet = 1'b1;                             		// UC: Unconditional
             default: conditionMet = 1'b0;
         endcase
     end
 
+    // ------------------------------------------------------------
     // State register
+    // ------------------------------------------------------------
+
+    // Advance to the calculated next state on each rising clock edge.
+    // Reset immediately returns the FSM to FETCH.
     always @(posedge clk or posedge reset) begin
         if (reset)
             currentState <= FETCH;
@@ -83,15 +128,23 @@ module cpu_fsm (
             currentState <= nextState;
     end
 
+    // ------------------------------------------------------------
     // Next-state logic
+    // ------------------------------------------------------------
+
+    // Determine which state should follow the current state.
+    // This block is combinational, so nextState must receive a
+    // default assignment to avoid inferring a latch.
     always @(*) begin
-        nextState = FETCH;
 
         case (currentState)
+
+            // Start the instruction-fetch sequence.
             FETCH: begin
                 nextState = DECODE;
             end
 
+            // Identify the instruction class and choose its execution path.
             DECODE: begin
                 if (RegisterInstruction || ImmediateInstruction)
                     nextState = RI_TYPE;
@@ -102,100 +155,176 @@ module cpu_fsm (
                 else if (BranchInstruction)
                     nextState = BRANCH;
                 else
-                    nextState = FETCH;
+                    nextState = FETCH;  // Unsupported instruction
             end
 
+            // Register and immediate operations complete in one state.
             RI_TYPE: begin
                 nextState = FETCH;
             end
 
+            // Store completes after writing data to memory.
             STORE: begin
                 nextState = FETCH;
             end
 
+            // Load is split into a memory-read phase and a write-back phase.
             LOAD_1: begin
                 nextState = LOAD_2;
             end
 
+            // Finish the load by writing the data into its destination register.
             LOAD_2: begin
                 nextState = FETCH;
             end
 
+            // Branch execution completes and returns to instruction fetch.
             BRANCH: begin
                 nextState = FETCH;
             end
 
+            // Recover from an invalid state.
             default: begin
                 nextState = FETCH;
             end
         endcase
     end
 
-    // Output logic
-    always @(*) begin
-        // Default outputs
-        PCEnable                       = 1'b0;
-        PCMultiplexorControl           = 1'b0;
-        InstructionRegisterEnable      = 1'b0;
-        RegisterEnables                = 16'b0;
-        ImmediateMutiplexorControl     = 1'b0;
-        BramWriteEnable                = 1'b0;
-        ALUMultiplexorControl          = 1'b0;
-        LoadStoreMultiplexorControl    = 1'b0;
 
+    // ------------------------------------------------------------
+    // Output/control logic
+    // ------------------------------------------------------------
+
+    // Default every output before decoding the current state.
+    // This prevents unintended latches in combinational logic.
+    always @(currentState) begin
+        PCEnable                            = 1'b0;
+        PCMultiplexorControl                = 1'b0;
+        InstructionRegisterEnable           = 1'b0;
+        InstructionRegisterMultiplexorControl = 1'b0;
+
+        RegisterEnables                     = 16'b0;
+        ImmediateMutiplexorControl           = 1'b0;
+        BramWriteEnable                     = 1'b0;
+        ALUMultiplexorControl                = 1'b0;
+        LoadStoreMultiplexorControl          = 1'b0;
+
+        // These fields are irrelevant unless the active state uses them.
+        // X values may help simulation expose accidental use, but use
+        // 0 instead if your project requires deterministic control values.
         Rdest = 4'bxxxx;
         Rsrc  = 4'bxxxx;
 
         case (currentState)
+
+            // ----------------------------------------------------
+            // FETCH
+            // ----------------------------------------------------
             FETCH: begin
-                // Fetch stage
+                // Fetch-stage control signals go here.
+                //
+                // For synchronous BRAM, remember that the memory output
+                // becomes valid after the clock edge that samples its
+                // address. The FSM must account for that read latency.
             end
 
+            // ----------------------------------------------------
+            // DECODE
+            // ----------------------------------------------------
             DECODE: begin
-                // Decode stage
+                // Decode-stage control signals go here.
+                // The instruction fields must remain stable while decoded.
             end
 
+            // ----------------------------------------------------
+            // RI_TYPE: register/immediate operation
+            // ----------------------------------------------------
             RI_TYPE: begin
+                // Advance the PC after executing the instruction.
                 PCEnable = 1'b1;
+
+                // Enable writing to the destination register.
+                // Shifting 1 by the destination index produces a one-hot mask.
                 RegisterEnables = 16'b1 << Instruction[11:8];
+
+                // Select the immediate operand for immediate instructions;
+                // otherwise, use the register operand.
                 ImmediateMutiplexorControl = ImmediateInstruction;
 
+                // Pass the register indices to the datapath.
                 Rdest = Instruction[11:8];
                 Rsrc  = Instruction[3:0];
             end
 
+            // ----------------------------------------------------
+            // STORE: write register data to memory
+            // ----------------------------------------------------
             STORE: begin
+                // Advance the PC after the store.
                 PCEnable = 1'b1;
+
+                // Enable writing to BRAM.
                 BramWriteEnable = 1'b1;
+
+                // Select the register containing the memory address.
                 LoadStoreMultiplexorControl = 1'b1;
 
+                // Select the registers needed by the store operation.
                 Rdest = Instruction[11:8];
                 Rsrc  = Instruction[3:0];
             end
 
+            // ----------------------------------------------------
+            // LOAD_1: initiate a memory read
+            // ----------------------------------------------------
             LOAD_1: begin
+                // Advance the PC according to the current CPU design.
+                // Confirm that this timing matches the BRAM read latency.
                 PCEnable = 1'b1;
-					 LoadStoreMultiplexorControl = 1'b1; // Apply load address to memory.
-                InstructionRegisterEnable = 1'b1; // Load the current instruction into the instruction register.
 
+                // Select the load address instead of the instruction PC.
+                LoadStoreMultiplexorControl = 1'b1;
+
+                // Control whether memory data or the saved instruction
+                // is presented to the instruction-decoding logic.
+                InstructionRegisterEnable = 1'b1;
+
+                // Provide the registers involved in the load operation.
                 Rdest = Instruction[11:8];
                 Rsrc  = Instruction[3:0];
             end
 
+            // ----------------------------------------------------
+            // LOAD_2: write loaded data to the destination register
+            // ----------------------------------------------------
             LOAD_2: begin
-					 ALUMultiplexorControl = 1'b1;
-					 InstructionRegisterMultiplexorControl = 1'b1; // Select the previous instruction to reference.
-                RegisterEnables <= 16'b1 << Instruction[11:8]; // Grab the Register Destination and store it in the RegisterEnables.
-					 // NOTE: Blocking statement used above to prevent race condition between the current and previous instruction references.
-					 end
+                // Select the memory-read data path for the load write-back.
+                ALUMultiplexorControl = 1'b1;
 
+                // Select the previously saved instruction rather than
+                // interpreting the loaded data as an instruction.
+                InstructionRegisterMultiplexorControl = 1'b1;
+
+                // Enable the destination register.
+                RegisterEnables = 16'b1 << Instruction[11:8];
+            end
+
+            // ----------------------------------------------------
+            // BRANCH: conditionally update the PC
+            // ----------------------------------------------------
             BRANCH: begin
+                // Update the PC only if the decoded condition is satisfied.
                 PCEnable = conditionMet;
+
+                // Select the branch-displacement path in the PC logic.
                 PCMultiplexorControl = 1'b1;
             end
 
+            // ----------------------------------------------------
+            // Invalid state
+            // ----------------------------------------------------
             default: begin
-                // Keep default outputs deasserted
+                // All outputs remain at their default values.
             end
         endcase
     end

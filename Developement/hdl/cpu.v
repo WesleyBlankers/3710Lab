@@ -4,7 +4,8 @@ module cpu #(
     parameter MEM_FILE   = "../src/bram.mem"
 )(
     input wire clk,
-    input wire reset
+    input wire reset,
+	 output wire R15Out // Test Wire exposing the value of the last register to the top level module.
 );
 
     // ============================================================
@@ -23,7 +24,6 @@ module cpu #(
 
     // Select between the BRAM output and the stored instruction.
     assign Instruction = InstructionRegisterMultiplexorControl ? InstructionRegister : BramReadValue;
-
 
     // ============================================================
     // Internal Wires: Instruction, Memory, and Datapath
@@ -115,7 +115,8 @@ module cpu #(
         .Ra(Ra),
         .Rb(Rb),
         .clk(clk),
-        .reset(reset)
+        .reset(reset),
+		  .R15Out(R15Out)
     );
 
     // ============================================================
