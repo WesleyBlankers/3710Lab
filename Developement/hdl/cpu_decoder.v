@@ -70,6 +70,7 @@ always @(*) begin
         // Unrecognized opcode: all outputs remain zero
         default: begin
             Rtype = 1'b0;
+				Itype = 1'b0;
             Stype = 1'b0;
             Ltype = 1'b0;
             BJtype = 1'b0;

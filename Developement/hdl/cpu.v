@@ -1,4 +1,3 @@
-```verilog
 module cpu #(
     parameter ADDR_WIDTH = 10,
     parameter DATA_WIDTH = 16,
@@ -23,7 +22,7 @@ module cpu #(
     end
 
     // Select between the BRAM output and the stored instruction.
-    assign Instruction = InstructionRegisterEnable ? InstructionRegister : BramReadValue;
+    assign Instruction = InstructionRegisterMultiplexorControl ? InstructionRegister : BramReadValue;
 
 
     // ============================================================
@@ -61,6 +60,7 @@ module cpu #(
     wire PCEnable;
     wire PCMultiplexorControl;
     wire InstructionRegisterEnable;
+	 wire InstructionRegisterMultiplexorControl;
 
     wire ImmediateMutiplexorControl;
     wire ALUMultiplexorControl;
@@ -133,6 +133,7 @@ module cpu #(
         .PCEnable(PCEnable),
         .PCMultiplexorControl(PCMultiplexorControl),
         .InstructionRegisterEnable(InstructionRegisterEnable),
+		  .InstructionRegisterMultiplexorControl(InstructionRegisterMultiplexorControl),
         .RegisterEnables(RegisterEnables),
         .ImmediateMutiplexorControl(ImmediateMutiplexorControl),
         .BramWriteEnable(BramWriteEnable),
@@ -160,4 +161,3 @@ module cpu #(
     );
 
 endmodule
-```
