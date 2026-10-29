@@ -7,7 +7,7 @@ module datapath(
 	 input  wire		  ALUMultiplexorControl,
 	 input  wire [15:0] BramReadValue,
 
-    input  wire [15:0] Immediate,
+    input  wire [7:0] Immediate,
     input  wire [7:0]  Opcode,
 
 	 output wire [4:0]  FlagsRegister,
@@ -196,7 +196,8 @@ module datapath(
     // ============================================================
     // Immediate/Register Selection
     // ============================================================
-
+	 
+   /*
    wire [15:0] ExtendedImmediate;
 
 	// Extend the immediate in both ways.
@@ -213,9 +214,11 @@ module datapath(
 		  Opcode == CMPI
        ) ? SignExtendedImmediate : ZeroExtendedImmediate;
 
+	 */
+	 
 	 // Select immediate or register operand.
     assign ALUA = selectedA;
-    assign ALUB = ImmediateMutiplexorControl ? ExtendedImmediate : selectedB;
+    assign ALUB = ImmediateMutiplexorControl ? Immediate : selectedB;
 	 assign Cin = FlagsRegister[4];
 
 

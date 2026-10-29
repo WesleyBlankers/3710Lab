@@ -50,7 +50,15 @@ module cpu_fsm (
     wire StoreInstruction;
     wire LoadInstruction;
     wire BranchInstruction;
+	 
+	 // CurrentState stores the active state.
+    // NextState is calculated by the combinational next-state logic.
+    reg [2:0] CurrentState;
+    reg [2:0] NextState;
 
+    // Indicates whether the current conditional branch should be taken.
+    reg ConditionMet;
+	 
     // Extract the opcode from the instruction fields.
     // This concatenation must match the instruction encoding
     // defined by the ISA.
@@ -76,20 +84,12 @@ module cpu_fsm (
     // Three bits are sufficient to represent the seven states.
     localparam FETCH   = 3'd0;  // Fetch instruction from memory
     localparam DECODE  = 3'd1;  // Determine instruction type
-    localparam RI_TYPE = 3'd2;  // Execute register/immediate operation
-    localparam STORE   = 3'd3;  // Write data to memory
-    localparam LOAD_1  = 3'd4;  // Initiate memory read for a load
-    localparam LOAD_2  = 3'd5;  // Write loaded data into a register
-    localparam BRANCH  = 3'd6;  // Evaluate and execute a branch
-
-    // CurrentState stores the active state.
-    // NextState is calculated by the combinational next-state logic.
-    reg [2:0] CurrentState;
-    reg [2:0] NextState;
-
-    // Indicates whether the current conditional branch should be taken.
-    reg ConditionMet;
-
+    localparam R_TYPE  = 3'd2;  // Execute register operation
+	 localparam I_TYPE  = 3'd3;  // Execute immediate operation
+    localparam STORE   = 3'd4;  // Write data to memory
+    localparam LOAD_1  = 3'd5;  // Initiate memory read for a load
+    localparam LOAD_2  = 3'd6;  // Write loaded data into a register
+    localparam BRANCH  = 3'd7;  // Evaluate and execute a branch
 
     // ------------------------------------------------------------
     // Branch-condition evaluation
@@ -145,7 +145,7 @@ module cpu_fsm (
     // Determine which state should follow the current state.
     // This block is combinational, so NextState must receive a
     // default assignment to avoid inferring a latch.
-    always @(CurrentState) begin
+    always @(*) begin
 
         case (CurrentState)
 
@@ -156,8 +156,10 @@ module cpu_fsm (
 
             // Identify the instruction class and choose its execution path.
             DECODE: begin
-                if (RegisterInstruction || ImmediateInstruction)
-                    NextState = RI_TYPE;
+                if (RegisterInstruction)
+                    NextState = R_TYPE;
+					 else if (ImmediateInstruction)
+						  NextState = I_TYPE;
                 else if (StoreInstruction)
                     NextState = STORE;
                 else if (LoadInstruction)
@@ -168,8 +170,13 @@ module cpu_fsm (
                     NextState = FETCH;  // Unsupported instruction
             end
 
-            // Register and immediate operations complete in one state.
-            RI_TYPE: begin
+            // Register operation.
+            R_TYPE: begin
+                NextState = FETCH;
+            end
+				
+				// Immediate operation.
+            I_TYPE: begin
                 NextState = FETCH;
             end
 
@@ -208,16 +215,15 @@ module cpu_fsm (
     // Default every output before decoding the current state.
     // This prevents unintended latches in combinational logic.
     always @(CurrentState) begin
-        PCEnable                            = 1'b0;
-        PCMultiplexorControl                = 1'b0;
-        InstructionRegisterEnable           = 1'b0;
-        InstructionRegisterMultiplexorControl = 1'b0;
-
-        RegisterEnables                     = 16'b0;
-        ImmediateMutiplexorControl           = 1'b0;
-        BramWriteEnable                     = 1'b0;
-        ALUMultiplexorControl                = 1'b0;
-        LoadStoreMultiplexorControl          = 1'b0;
+        PCEnable                            		= 1'b0;
+        PCMultiplexorControl                		= 1'b0;
+        InstructionRegisterEnable          	 	= 1'b0;
+        InstructionRegisterMultiplexorControl 	= 1'b0;
+        RegisterEnables                      	= 16'b0;
+        ImmediateMutiplexorControl           	= 1'b0;
+        BramWriteEnable                      	= 1'b0;
+        ALUMultiplexorControl                	= 1'b0;
+        LoadStoreMultiplexorControl          	= 1'b0;
 
         // These fields are irrelevant unless the active state uses them.
         // X values may help simulation expose accidental use, but use
@@ -247,9 +253,9 @@ module cpu_fsm (
             end
 
             // ----------------------------------------------------
-            // RI_TYPE: register/immediate operation
+            // RI_TYPE: register operation
             // ----------------------------------------------------
-            RI_TYPE: begin
+            R_TYPE: begin
                 // Advance the PC after executing the instruction.
                 PCEnable = 1'b1;
 
@@ -257,13 +263,28 @@ module cpu_fsm (
                 // Shifting 1 by the destination index produces a one-hot mask.
                 RegisterEnables = 16'b1 << Instruction[11:8];
 
-                // Select the immediate operand for immediate instructions;
-                // otherwise, use the register operand.
+                // Pass the register indices to the datapath.
+                Rdest = Instruction[11:8];
+                Rsrc  = Instruction[3:0];
+            end
+				
+            // ----------------------------------------------------
+            // I_TYPE: immediate operation
+            // ----------------------------------------------------
+            I_TYPE: begin
+                // Advance the PC after executing the instruction.
+                PCEnable = 1'b1;
+
+                // Enable writing to the destination register.
+                // Shifting 1 by the destination index produces a one-hot mask.
+                RegisterEnables = 16'b1 << Instruction[11:8];
+
+                // Select the immediate operand for immediate instructions.
                 ImmediateMutiplexorControl = ImmediateInstruction;
 
                 // Pass the register indices to the datapath.
                 Rdest = Instruction[11:8];
-                Rsrc  = Instruction[3:0];
+					 Rsrc  = Instruction[11:8];
             end
 
             // ----------------------------------------------------
