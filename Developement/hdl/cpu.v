@@ -42,6 +42,7 @@ module cpu #(
     output wire [15:0] debugRa,
     output wire [15:0] debugRb,
     output wire [15:0] debugRegisterEnables,
+	 output wire [15:0] debugALUBus,
     output wire [4:0]  debugFlagsRegister,
 
     // FSM control signals
@@ -137,6 +138,7 @@ module cpu #(
         .Rb(Rb),
         .clk(clk),
         .reset(reset),
+		  .debugALUBus(debugALUBus),
 		  .debugR0(debugR0),
 		  .debugR1(debugR1),
 		  .debugR2(debugR2),

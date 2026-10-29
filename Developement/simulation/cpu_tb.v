@@ -79,6 +79,12 @@ always @(posedge clk) begin
         $display(" Load/Store:  %b",   uut.debugLoadStoreMultiplexorControl);
 
         // ====================================================
+        // DEBUG PRINTS
+        // ====================================================
+		  $display("\n--- DEBUG STATEMENTS ---");
+        $display(" ALUBus:  %d", uut.debugALUBus);
+		  
+        // ====================================================
         // REGISTER FILE
         // ====================================================
         $display("\n--- REGISTER FILE ---");
@@ -124,10 +130,10 @@ end
         // Check before the active edge, then read the result
         // after the register write has completed.
         begin : wait_for_r15
-            for (cycle = 0; cycle < 500; cycle = cycle + 1) begin
+				for (cycle = 0; cycle < 500; cycle = cycle + 1) begin
                 @(posedge clk);
 
-                if (uut.RegisterEnables[15] === 1'b1) begin
+                if (uut.debugRegisterEnables[15] === 1'b1) begin // Changed to debugRegisterEnables
                     @(negedge clk);
                     #1;
 
@@ -150,15 +156,14 @@ end
             end
         end
 
-        if (!passed) begin
+			if (!passed) begin
             $display("TIMEOUT: R15 was not written within 500 cycles.");
-            $display("Last PC = %d", uut.PCout);
-            $display("Last instruction = %b", uut.Instruction);
-            $display("Last opcode = %b", uut.Opcode);
-				$display("Last immediate = %b", uut.Immediate);
-            $display("Last register enables = %b",
-                     uut.RegisterEnables);
-        end
+            $display("Last PC = %d", uut.debugPCout);
+            $display("Last instruction = %b", uut.debugInstruction);
+            $display("Last opcode = %b", uut.debugOpcode);
+            $display("Last immediate = %b", uut.debugImmediate);
+            $display("Last register enables = %b", uut.debugRegisterEnables);
+			end
 
         $finish;
     end

@@ -11,12 +11,12 @@ module datapath(
     input  wire [7:0]  Opcode,
 
 	 output wire [4:0]  FlagsRegister,
-	 output wire [15:0] aluResult,
 	 output wire [15:0] Ra,
 	 output wire [15:0] Rb,
 	 	 
     input  wire        clk,
     input  wire        reset,
+	 output wire [15:0] debugALUBus,
 	 output wire [15:0] debugR0,
 	 output wire [15:0] debugR1,
 	 output wire [15:0] debugR2,
@@ -211,7 +211,7 @@ module datapath(
     // ALU Result Bus
     // ============================================================
 
-	 assign aluResult = ALUResult;
+	 assign debugALUBus = ALUResult;
 
     // ============================================================
     // Flag Register
