@@ -5,7 +5,7 @@ module cpu #(
 )(
     input wire clk,
     input wire reset,
-	 output wire R15Out // Test Wire exposing the value of the last register to the top level module.
+	 output wire [15:0] R15Out // Test Wire exposing the value of the last register to the top level module.
 );
 
     // ============================================================
