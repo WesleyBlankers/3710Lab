@@ -46,44 +46,72 @@ always @(posedge clk) begin
         $display("==============================================================");
 
         $display("--- FETCH / INSTRUCTION ---");
-        $display(" PC:          %d", uut.debugPCout);
-        $display(" BRAM Address:%d", uut.debugBramAddress);
-        $display(" BRAM Data:   %b", uut.debugBramReadValue);
-        $display(" IR:          %b", uut.debugInstructionRegister);
-        $display(" Instruction: %b", uut.debugInstruction);
+        $display(" PC:          		%d", uut.debugPCout);
+        $display(" BRAM Address:		%d", uut.debugBramAddress);
+        $display(" BRAM Data:   		%b", uut.debugBramReadValue);
+        $display(" IR:          		%b", uut.debugInstructionRegister);
+        $display(" Instruction: 		%b", uut.debugInstruction);
 
         // ====================================================
         // INSTRUCTION DECODE
         // ====================================================
         $display("\n--- DECODE ---");
-        $display(" Opcode:      %b", uut.debugOpcode);
-        $display(" Rsrc:        %d", uut.debugRsrc);
-        $display(" Rdest:       %d", uut.debugRdest);
-        $display(" Immediate:   %d", uut.debugImmediate);
-        $display(" Ra:          %b", uut.debugRa);
-        $display(" Rb:          %b", uut.debugRb);
+        $display(" Opcode:      		%b", uut.debugOpcode);
+        $display(" Rsrc:        		%d", uut.debugRsrc);
+        $display(" Rdest:       		%d", uut.debugRdest);
+        $display(" Immediate:   		%d", uut.debugImmediate);
+        $display(" Ra:          		%b", uut.debugRa);
+        $display(" Rb:          		%b", uut.debugRb);
+		  $display("\n--- INSTRUCTION TYPE ---");
+
+			if (uut.debugRegisterInstruction)
+				 $display(" Instruction Type: R-type");
+			else if (uut.debugImmediateInstruction)
+				 $display(" Instruction Type: I-type");
+			else if (uut.debugStoreInstruction)
+				 $display(" Instruction Type: Store");
+			else if (uut.debugLoadInstruction)
+				 $display(" Instruction Type: Load");
+			else if (uut.debugBranchInstruction)
+				 $display(" Instruction Type: Branch");
+			else
+				 $display(" Instruction Type: Unknown / No instruction");
 
         // ====================================================
         // CONTROL SIGNALS
         // ====================================================
         $display("\n--- CONTROL ---");
-        $display(" RegisterEn:  %b", uut.debugRegisterEnables);
-        $display(" Flags:       %05b", uut.debugFlagsRegister);
-        $display(" PCEnable:    %b",   uut.debugPCEnable);
-        $display(" PC Mux:      %b",   uut.debugPCMultiplexorControl);
-        $display(" IR Enable:   %b",   uut.debugInstructionRegisterEnable);
-        $display(" IR Mux:      %b",   uut.debugInstructionRegisterMultiplexorControl);
-        $display(" BRAM WE:     %b",   uut.debugBramWriteEnable);
-        $display(" ALU Mux:     %b",   uut.debugALUMultiplexorControl);
-        $display(" Imm Mux:     %b",   uut.debugImmediateMultiplexorControl);
-        $display(" Load/Store:  %b",   uut.debugLoadStoreMultiplexorControl);
+        $display(" RegisterEn:   	%016b", uut.debugRegisterEnables);
+        $display(" Flags:        	%05b", uut.debugFlagsRegister);
+        $display(" PCEnable:     	%b",   uut.debugPCEnable);
+        $display(" PC Mux:       	%b",   uut.debugPCMultiplexorControl);
+        $display(" IR Enable:    	%b",   uut.debugInstructionRegisterEnable);
+        $display(" IR Mux:       	%b",   uut.debugInstructionRegisterMultiplexorControl);
+        $display(" BRAM WE:      	%b",   uut.debugBramWriteEnable);
+        $display(" ALU Mux:      	%b",   uut.debugALUMultiplexorControl);
+        $display(" Imm Mux:      	%b",   uut.debugImmediateMultiplexorControl);
+        $display(" Load/Store:   	%b",   uut.debugLoadStoreMultiplexorControl);
+		  $display(" Condition Met:	%b", 	 uut.debugConditionMet);
+		  $display(" Current State:	%d", uut.debugCurrentState);
+		  $display(" Next State:   	%d", uut.debugNextState);
 
         // ====================================================
         // DEBUG PRINTS
         // ====================================================
 		  $display("\n--- DEBUG STATEMENTS ---");
-        $display(" ALUBus:  %d", uut.debugALUBus);
+        $display(" ALUBus:  			%d", uut.debugALUBus);
 		  
+		  // ============================================================
+		  // ALU DEBUG
+		  // ============================================================
+		  $display("\n--- ALU DEBUG ---");
+		  $display(" ALU A:       		%b (%0d)", uut.debugAluA, $signed(uut.debugAluA));
+		  $display(" ALU B/Immediate: %b (%0d)", uut.debugAluB, $signed(uut.debugAluB));
+		  $display(" Carry In:    		%b", uut.debugAluCin);
+		  $display(" Opcode:      		%b", uut.debugAluOpcode);
+		  $display(" ALU Result:  		%b (%0d)", uut.debugAluResult, $signed(uut.debugAluResult));
+		  $display(" ALU Flags:   		%b", uut.debugAluFlags);
+					  
         // ====================================================
         // REGISTER FILE
         // ====================================================

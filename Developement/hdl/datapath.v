@@ -32,9 +32,20 @@ module datapath(
 	 output wire [15:0] debugR12,
 	 output wire [15:0] debugR13,
 	 output wire [15:0] debugR14,
-	 output wire [15:0] debugR15
+	 output wire [15:0] debugR15,
+	 
+	 // ALU debug outputs
+    output wire [15:0] debugAluA,
+    output wire [15:0] debugAluB,
+    output wire        debugAluCin,
+    output wire [7:0]  debugAluOpcode,
+    output wire [15:0] debugAluResult,
+    output wire [4:0]  debugAluFlags,
+    output wire        debugAluReset
 	 
 );
+
+	`include "params.sv"
 	
     // ============================================================
     // Register File Outputs
@@ -182,13 +193,29 @@ module datapath(
 		assign Ra = selectedA;
 		assign Rb = selectedB;
 
-
     // ============================================================
     // Immediate/Register Selection
     // ============================================================
 
+   wire [15:0] ExtendedImmediate;
+
+	// Extend the immediate in both ways.
+	assign ZeroExtendedImmediate = {8'b0, Immediate};
+	assign SignExtendedImmediate = {{8{Immediate[7]}}, Immediate};
+
+	// Select extension type based on opcode.
+	assign ExtendedImmediate =
+		 (Opcode == ADDI  	||
+		  Opcode == ADDCI  	||
+		  Opcode == SUBI  	||
+		  Opcode == SUBCI  	||
+		  Opcode == MULI  	||
+		  Opcode == CMPI
+       ) ? SignExtendedImmediate : ZeroExtendedImmediate;
+
+	 // Select immediate or register operand.
     assign ALUA = selectedA;
-    assign ALUB = ImmediateMutiplexorControl ? Immediate : selectedB;
+    assign ALUB = ImmediateMutiplexorControl ? ExtendedImmediate : selectedB;
 	 assign Cin = FlagsRegister[4];
 
 
@@ -196,16 +223,24 @@ module datapath(
     // ALU
     // ============================================================
 
-    alu alu_unit (
-        .A(ALUA),
-        .B(ALUB),
-        .Cin(Cin),
-        .Opcode(Opcode),
-        .C(ALUResult),
-        .Flags(ALUFlags),
-		  .reset(reset)
-    );
+    alu alu (
+    .A(ALUA),
+    .B(ALUB),
+    .Cin(Cin),
+    .Opcode(Opcode),
+    .reset(reset),
 
+    .C(ALUResult),
+    .Flags(ALUFlags),
+
+    .debugAluA(debugAluA),
+    .debugAluB(debugAluB),
+    .debugAluCin(debugAluCin),
+    .debugAluOpcode(debugAluOpcode),
+    .debugAluResult(debugAluResult),
+    .debugAluFlags(debugAluFlags),
+    .debugAluReset(debugAluReset)
+);
 
     // ============================================================
     // ALU Result Bus

@@ -1,24 +1,27 @@
 module alu (
-    A,
-    B,
-    Cin,
-    Opcode,
-    C,
-    Flags,
-	 reset
+    // Inputs
+    input  wire [15:0] A,          // Rdest operand
+    input  wire [15:0] B,          // Rsrc or immediate operand
+    input  wire        Cin,
+    input  wire [7:0]  Opcode,
+    input  wire        reset,
+
+    // Outputs
+    output reg  [15:0] C,
+    output reg  [4:0]  Flags,
+
+    // Debug outputs
+    output wire [15:0] debugAluA,
+    output wire [15:0] debugAluB,
+    output wire        debugAluCin,
+    output wire [7:0]  debugAluOpcode,
+    output wire [15:0] debugAluResult,
+    output wire [4:0]  debugAluFlags,
+    output wire        debugAluReset
 );
 
+
 	`include "params.sv"
-
-	 // Rdest is A
-	 // Rsrc or Imm is B
-    input  [15:0] A, B;
-    input         Cin;
-    input  [7:0]  Opcode;
-	 input			reset;
-
-    output reg [15:0] C;
-    output reg [4:0]  Flags;
 
     // Flags:
     // Flags[4] = C (Carry)
@@ -234,5 +237,16 @@ module alu (
         endcase
     end
 end
+
+				// ============================================================
+				// ALU DEBUG SIGNALS
+				// ============================================================
+				assign debugAluA      = A;
+				assign debugAluB      = B;
+				assign debugAluCin    = Cin;
+				assign debugAluOpcode = Opcode;
+				assign debugAluResult = C;
+				assign debugAluFlags  = Flags;
+				assign debugAluReset  = reset;
 
 endmodule

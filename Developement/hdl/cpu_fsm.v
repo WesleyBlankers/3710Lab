@@ -26,7 +26,17 @@ module cpu_fsm (
     output reg  [3:0]  Rdest,    // Destination register index
     output reg  [3:0]  Rsrc,     // Source register index
     output wire [7:0]  Opcode,   // Decoded operation code
-    output wire [7:0]  Immediate // Immediate value or branch displacement
+    output wire [7:0]  Immediate, // Immediate value or branch displacement
+	 
+	 // Debug Wires
+	 output wire debugRegisterInstruction,
+	 output wire debugImmediateInstruction,
+	 output wire debugStoreInstruction,
+	 output wire debugLoadInstruction,
+	 output wire debugBranchInstruction,
+	 output wire debugConditionMet,
+	 output wire [2:0] debugCurrentState,
+	 output wire [2:0] debugNextState
 );
 
     // ------------------------------------------------------------
@@ -72,13 +82,13 @@ module cpu_fsm (
     localparam LOAD_2  = 3'd5;  // Write loaded data into a register
     localparam BRANCH  = 3'd6;  // Evaluate and execute a branch
 
-    // currentState stores the active state.
-    // nextState is calculated by the combinational next-state logic.
-    reg [2:0] currentState;
-    reg [2:0] nextState;
+    // CurrentState stores the active state.
+    // NextState is calculated by the combinational next-state logic.
+    reg [2:0] CurrentState;
+    reg [2:0] NextState;
 
     // Indicates whether the current conditional branch should be taken.
-    reg conditionMet;
+    reg ConditionMet;
 
 
     // ------------------------------------------------------------
@@ -96,22 +106,22 @@ module cpu_fsm (
     // Verify these condition definitions against the ISA specification.
     always @(*) begin
         case (Instruction[11:8])
-            4'h0: conditionMet =  FlagsRegister[1];                 		// EQ: Equal, Z = 1
-            4'h1: conditionMet = ~FlagsRegister[1];                 		// NE: Not Equal, Z = 0
-            4'h2: conditionMet =  FlagsRegister[4];                 		// CS: Carry Set, C = 1 
-            4'h3: conditionMet = ~FlagsRegister[4];                 		// CC: Carry Clear, C = 0
-            4'h4: conditionMet =  FlagsRegister[3];                 		// HI: Higher than, L = 1
-            4'h5: conditionMet = ~FlagsRegister[3];                 		// LS: Lower than or Same as, L = 0
-            4'h6: conditionMet =  FlagsRegister[0];                 		// GT: Greater than, N = 1
-            4'h7: conditionMet = ~FlagsRegister[0];                 		// LE: Less than or Equal, N = 0
-            4'h8: conditionMet =  FlagsRegister[2];                 		// FS: Flag Set, F = 1
-            4'h9: conditionMet = ~FlagsRegister[2];                 		// FC: Flag Clear, F = 0
-            4'hA: conditionMet = ~FlagsRegister[3] & ~FlagsRegister[1]; // LO: Lower than, L = 0 and Z = 0
-            4'hB: conditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS: Higher than or Same as, L = 0 or Z = 1
-            4'hC: conditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT: Less than, N = 0 and Z = 0
-            4'hD: conditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE: Greater than or Equal, N = 1 or Z = 1
-            4'hE: conditionMet = 1'b1;                             		// UC: Unconditional
-            default: conditionMet = 1'b0;
+            4'h0: ConditionMet =  FlagsRegister[1];                 		// EQ: Equal, Z = 1
+            4'h1: ConditionMet = ~FlagsRegister[1];                 		// NE: Not Equal, Z = 0
+            4'h2: ConditionMet =  FlagsRegister[4];                 		// CS: Carry Set, C = 1 
+            4'h3: ConditionMet = ~FlagsRegister[4];                 		// CC: Carry Clear, C = 0
+            4'h4: ConditionMet =  FlagsRegister[3];                 		// HI: Higher than, L = 1
+            4'h5: ConditionMet = ~FlagsRegister[3];                 		// LS: Lower than or Same as, L = 0
+            4'h6: ConditionMet =  FlagsRegister[0];                 		// GT: Greater than, N = 1
+            4'h7: ConditionMet = ~FlagsRegister[0];                 		// LE: Less than or Equal, N = 0
+            4'h8: ConditionMet =  FlagsRegister[2];                 		// FS: Flag Set, F = 1
+            4'h9: ConditionMet = ~FlagsRegister[2];                 		// FC: Flag Clear, F = 0
+            4'hA: ConditionMet = ~FlagsRegister[3] & ~FlagsRegister[1]; // LO: Lower than, L = 0 and Z = 0
+            4'hB: ConditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS: Higher than or Same as, L = 0 or Z = 1
+            4'hC: ConditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT: Less than, N = 0 and Z = 0
+            4'hD: ConditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE: Greater than or Equal, N = 1 or Z = 1
+            4'hE: ConditionMet = 1'b1;                             		// UC: Unconditional
+            default: ConditionMet = 1'b0;
         endcase
     end
 
@@ -123,9 +133,9 @@ module cpu_fsm (
     // Reset immediately returns the FSM to FETCH.
     always @(posedge clk or posedge reset) begin
         if (reset)
-            currentState <= FETCH;
+            CurrentState <= FETCH;
         else
-            currentState <= nextState;
+            CurrentState <= NextState;
     end
 
     // ------------------------------------------------------------
@@ -133,59 +143,59 @@ module cpu_fsm (
     // ------------------------------------------------------------
 
     // Determine which state should follow the current state.
-    // This block is combinational, so nextState must receive a
+    // This block is combinational, so NextState must receive a
     // default assignment to avoid inferring a latch.
-    always @(*) begin
+    always @(CurrentState) begin
 
-        case (currentState)
+        case (CurrentState)
 
             // Start the instruction-fetch sequence.
             FETCH: begin
-                nextState = DECODE;
+                NextState = DECODE;
             end
 
             // Identify the instruction class and choose its execution path.
             DECODE: begin
                 if (RegisterInstruction || ImmediateInstruction)
-                    nextState = RI_TYPE;
+                    NextState = RI_TYPE;
                 else if (StoreInstruction)
-                    nextState = STORE;
+                    NextState = STORE;
                 else if (LoadInstruction)
-                    nextState = LOAD_1;
+                    NextState = LOAD_1;
                 else if (BranchInstruction)
-                    nextState = BRANCH;
+                    NextState = BRANCH;
                 else
-                    nextState = FETCH;  // Unsupported instruction
+                    NextState = FETCH;  // Unsupported instruction
             end
 
             // Register and immediate operations complete in one state.
             RI_TYPE: begin
-                nextState = FETCH;
+                NextState = FETCH;
             end
 
             // Store completes after writing data to memory.
             STORE: begin
-                nextState = FETCH;
+                NextState = FETCH;
             end
 
             // Load is split into a memory-read phase and a write-back phase.
             LOAD_1: begin
-                nextState = LOAD_2;
+                NextState = LOAD_2;
             end
 
             // Finish the load by writing the data into its destination register.
             LOAD_2: begin
-                nextState = FETCH;
+                NextState = FETCH;
             end
 
             // Branch execution completes and returns to instruction fetch.
             BRANCH: begin
-                nextState = FETCH;
+                NextState = FETCH;
             end
 
             // Recover from an invalid state.
             default: begin
-                nextState = FETCH;
+                NextState = FETCH;
             end
         endcase
     end
@@ -197,7 +207,7 @@ module cpu_fsm (
 
     // Default every output before decoding the current state.
     // This prevents unintended latches in combinational logic.
-    always @(currentState) begin
+    always @(CurrentState) begin
         PCEnable                            = 1'b0;
         PCMultiplexorControl                = 1'b0;
         InstructionRegisterEnable           = 1'b0;
@@ -215,7 +225,7 @@ module cpu_fsm (
         Rdest = 4'bxxxx;
         Rsrc  = 4'bxxxx;
 
-        case (currentState)
+        case (CurrentState)
 
             // ----------------------------------------------------
             // FETCH
@@ -314,7 +324,7 @@ module cpu_fsm (
             // ----------------------------------------------------
             BRANCH: begin
                 // Update the PC only if the decoded condition is satisfied.
-                PCEnable = conditionMet;
+                PCEnable = ConditionMet;
 
                 // Select the branch-displacement path in the PC logic.
                 PCMultiplexorControl = 1'b1;
@@ -328,5 +338,14 @@ module cpu_fsm (
             end
         endcase
     end
+	 
+		assign debugRegisterInstruction 	= RegisterInstruction;
+		assign debugImmediateInstruction = ImmediateInstruction;
+		assign debugStoreInstruction     = StoreInstruction;
+		assign debugLoadInstruction      = LoadInstruction;
+		assign debugBranchInstruction    = BranchInstruction;
+		assign debugConditionMet         = ConditionMet;
+		assign debugCurrentState         = CurrentState;
+		assign debugNextState            = NextState;
 
 endmodule

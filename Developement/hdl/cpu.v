@@ -4,56 +4,73 @@ module cpu #(
     parameter DATA_WIDTH = 16,
     parameter MEM_FILE   = "../src/bram.mem"
 )(
-    input wire clk,
-    input wire reset,
+		input wire clk,
+		input wire reset,
 
-    // Existing debug output
-	 output wire [15:0] debugR0,
-	 output wire [15:0] debugR1,
-	 output wire [15:0] debugR2,
-	 output wire [15:0] debugR3,
-	 output wire [15:0] debugR4,
-	 output wire [15:0] debugR5,
-	 output wire [15:0] debugR6,
-	 output wire [15:0] debugR7,
-	 output wire [15:0] debugR8,
-	 output wire [15:0] debugR9,
-	 output wire [15:0] debugR10,
-	 output wire [15:0] debugR11,
-	 output wire [15:0] debugR12,
-	 output wire [15:0] debugR13,
-	 output wire [15:0] debugR14,
-	 output wire [15:0] debugR15,
+		// Existing debug output
+		output wire [15:0] debugR0,
+		output wire [15:0] debugR1,
+		output wire [15:0] debugR2,
+		output wire [15:0] debugR3,
+		output wire [15:0] debugR4,
+		output wire [15:0] debugR5,
+		output wire [15:0] debugR6,
+		output wire [15:0] debugR7,
+		output wire [15:0] debugR8,
+		output wire [15:0] debugR9,
+		output wire [15:0] debugR10,
+		output wire [15:0] debugR11,
+		output wire [15:0] debugR12,
+		output wire [15:0] debugR13,
+		output wire [15:0] debugR14,
+		output wire [15:0] debugR15,
 
-    // Instruction fetch and program counter
-    output wire [15:0] debugPCout,
-    output wire [15:0] debugBramAddress,
-    output wire [15:0] debugBramReadValue,
-    output wire [15:0] debugInstruction,
-    output wire [15:0] debugInstructionRegister,
+		// Instruction fetch and program counter
+		output wire [15:0] debugPCout,
+		output wire [15:0] debugBramAddress,
+		output wire [15:0] debugBramReadValue,
+		output wire [15:0] debugInstruction,
+		output wire [15:0] debugInstructionRegister,
 
-    // Instruction decoder
-    output wire [7:0] debugOpcode,
-    output wire [7:0] debugImmediate,
-    output wire [3:0] debugRsrc,
-    output wire [3:0] debugRdest,
+		// Instruction decoder
+		output wire [7:0] debugOpcode,
+		output wire [7:0] debugImmediate,
+		output wire [3:0] debugRsrc,
+		output wire [3:0] debugRdest,
 
-    // Datapath
-    output wire [15:0] debugRa,
-    output wire [15:0] debugRb,
-    output wire [15:0] debugRegisterEnables,
-	 output wire [15:0] debugALUBus,
-    output wire [4:0]  debugFlagsRegister,
+		// Datapath
+		output wire [15:0] debugRa,
+		output wire [15:0] debugRb,
+		output wire [15:0] debugRegisterEnables,
+		output wire [15:0] debugALUBus,
+		output wire [4:0]  debugFlagsRegister,
+		
+		// ALU
+		output wire [15:0] debugAluA,
+		output wire [15:0] debugAluB,
+		output wire        debugAluCin,
+		output wire [7:0]  debugAluOpcode,
+		output wire [15:0] debugAluResult,
+		output wire [4:0]  debugAluFlags,
+		output wire        debugAluReset,
 
-    // FSM control signals
-    output wire debugPCEnable,
-    output wire debugPCMultiplexorControl,
-    output wire debugInstructionRegisterEnable,
-    output wire debugInstructionRegisterMultiplexorControl,
-    output wire debugImmediateMultiplexorControl,
-    output wire debugALUMultiplexorControl,
-    output wire debugLoadStoreMultiplexorControl,
-    output wire debugBramWriteEnable
+		// FSM control signals
+		output wire debugPCEnable,
+		output wire debugPCMultiplexorControl,
+		output wire debugInstructionRegisterEnable,
+		output wire debugInstructionRegisterMultiplexorControl,
+		output wire debugImmediateMultiplexorControl,
+		output wire debugALUMultiplexorControl,
+		output wire debugLoadStoreMultiplexorControl,
+		output wire debugBramWriteEnable,
+		output wire       debugRegisterInstruction,
+		output wire       debugImmediateInstruction,
+		output wire       debugStoreInstruction,
+		output wire       debugLoadInstruction,
+		output wire       debugBranchInstruction,
+		output wire       debugConditionMet,
+		output wire [2:0] debugCurrentState,
+		output wire [2:0] debugNextState
 );
 
     // ============================================================
@@ -154,7 +171,14 @@ module cpu #(
 		  .debugR12(debugR12),
 		  .debugR13(debugR13),
 		  .debugR14(debugR14),
-		  .debugR15(debugR15)
+		  .debugR15(debugR15),
+		  .debugAluA(debugAluA),
+		  .debugAluB(debugAluB),
+		  .debugAluCin(debugAluCin),
+		  .debugAluOpcode(debugAluOpcode),
+		  .debugAluResult(debugAluResult),
+		  .debugAluFlags(debugAluFlags),
+		  .debugAluReset(debugAluReset)
     );
 
     // ============================================================
@@ -163,27 +187,36 @@ module cpu #(
     // ============================================================
 
     cpu_fsm fsm (
-        .clk(clk),
-        .reset(reset),
+			.clk(clk),
+			.reset(reset),
 
-        .Instruction(Instruction),
-        .FlagsRegister(FlagsRegister),
+			.Instruction(Instruction),
+			.FlagsRegister(FlagsRegister),
 
-        .PCEnable(PCEnable),
-        .PCMultiplexorControl(PCMultiplexorControl),
-        .InstructionRegisterEnable(InstructionRegisterEnable),
-		  .InstructionRegisterMultiplexorControl(InstructionRegisterMultiplexorControl),
-        .RegisterEnables(RegisterEnables),
-        .ImmediateMutiplexorControl(ImmediateMutiplexorControl),
-        .BramWriteEnable(BramWriteEnable),
-        .ALUMultiplexorControl(ALUMultiplexorControl),
-        .LoadStoreMultiplexorControl(LoadStoreMultiplexorControl),
+			.PCEnable(PCEnable),
+			.PCMultiplexorControl(PCMultiplexorControl),
+			.InstructionRegisterEnable(InstructionRegisterEnable),
+			.InstructionRegisterMultiplexorControl(InstructionRegisterMultiplexorControl),
+			.RegisterEnables(RegisterEnables),
+			.ImmediateMutiplexorControl(ImmediateMutiplexorControl),
+			.BramWriteEnable(BramWriteEnable),
+			.ALUMultiplexorControl(ALUMultiplexorControl),
+			.LoadStoreMultiplexorControl(LoadStoreMultiplexorControl),
 
-        .Rdest(Rdest),
-        .Rsrc(Rsrc),
-        .Opcode(Opcode),
-        .Immediate(Immediate)
-    );
+			.Rdest(Rdest),
+			.Rsrc(Rsrc),
+			.Opcode(Opcode),
+			.Immediate(Immediate),
+
+			.debugRegisterInstruction(debugRegisterInstruction),
+			.debugImmediateInstruction(debugImmediateInstruction),
+			.debugStoreInstruction(debugStoreInstruction),
+			.debugLoadInstruction(debugLoadInstruction),
+			.debugBranchInstruction(debugBranchInstruction),
+			.debugConditionMet(debugConditionMet),
+			.debugCurrentState(debugCurrentState),
+			.debugNextState(debugNextState)
+ );
 
     // ============================================================
     // Program Counter (PC)
