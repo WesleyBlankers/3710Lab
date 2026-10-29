@@ -17,11 +17,24 @@ module datapath(
 	 	 
     input  wire        clk,
     input  wire        reset,
-	 output wire [15:0] R15Out
+	 output wire [15:0] debugR0,
+	 output wire [15:0] debugR1,
+	 output wire [15:0] debugR2,
+	 output wire [15:0] debugR3,
+	 output wire [15:0] debugR4,
+	 output wire [15:0] debugR5,
+	 output wire [15:0] debugR6,
+	 output wire [15:0] debugR7,
+	 output wire [15:0] debugR8,
+	 output wire [15:0] debugR9,
+	 output wire [15:0] debugR10,
+	 output wire [15:0] debugR11,
+	 output wire [15:0] debugR12,
+	 output wire [15:0] debugR13,
+	 output wire [15:0] debugR14,
+	 output wire [15:0] debugR15
 	 
 );
-
-	 assign R15Out = r15;
 	
     // ============================================================
     // Register File Outputs
@@ -43,7 +56,23 @@ module datapath(
     wire [15:0] r13;
     wire [15:0] r14;
     wire [15:0] r15;
-
+	 
+	 assign debugR0  = r0;
+	 assign debugR1  = r1;
+ 	 assign debugR2  = r2;
+	 assign debugR3  = r3;
+	 assign debugR4  = r4;
+	 assign debugR5  = r5;
+	 assign debugR6  = r6;
+	 assign debugR7  = r7;
+	 assign debugR8  = r8;
+	 assign debugR9  = r9;
+	 assign debugR10 = r10;
+	 assign debugR11 = r11;
+	 assign debugR12 = r12;
+	 assign debugR13 = r13;
+	 assign debugR14 = r14;
+	 assign debugR15 = r15;
 
     // ============================================================
     // ALU Inputs

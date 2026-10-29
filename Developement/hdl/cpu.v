@@ -1,3 +1,4 @@
+
 module cpu #(
     parameter ADDR_WIDTH = 10,
     parameter DATA_WIDTH = 16,
@@ -5,25 +6,54 @@ module cpu #(
 )(
     input wire clk,
     input wire reset,
-	 output wire [15:0] R15Out // Test Wire exposing the value of the last register to the top level module.
+
+    // Existing debug output
+	 output wire [15:0] debugR0,
+	 output wire [15:0] debugR1,
+	 output wire [15:0] debugR2,
+	 output wire [15:0] debugR3,
+	 output wire [15:0] debugR4,
+	 output wire [15:0] debugR5,
+	 output wire [15:0] debugR6,
+	 output wire [15:0] debugR7,
+	 output wire [15:0] debugR8,
+	 output wire [15:0] debugR9,
+	 output wire [15:0] debugR10,
+	 output wire [15:0] debugR11,
+	 output wire [15:0] debugR12,
+	 output wire [15:0] debugR13,
+	 output wire [15:0] debugR14,
+	 output wire [15:0] debugR15,
+
+    // Instruction fetch and program counter
+    output wire [15:0] debugPCout,
+    output wire [15:0] debugBramAddress,
+    output wire [15:0] debugBramReadValue,
+    output wire [15:0] debugInstruction,
+    output wire [15:0] debugInstructionRegister,
+
+    // Instruction decoder
+    output wire [7:0] debugOpcode,
+    output wire [7:0] debugImmediate,
+    output wire [3:0] debugRsrc,
+    output wire [3:0] debugRdest,
+
+    // Datapath
+    output wire [15:0] debugRa,
+    output wire [15:0] debugRb,
+    output wire [15:0] debugRegisterEnables,
+    output wire [4:0]  debugFlagsRegister,
+
+    // FSM control signals
+    output wire debugPCEnable,
+    output wire debugPCMultiplexorControl,
+    output wire debugInstructionRegisterEnable,
+    output wire debugInstructionRegisterMultiplexorControl,
+    output wire debugImmediateMultiplexorControl,
+    output wire debugALUMultiplexorControl,
+    output wire debugLoadStoreMultiplexorControl,
+    output wire debugBramWriteEnable
 );
-
-    // ============================================================
-    // Instruction Register
-    // Stores the current instruction fetched from BRAM.
-    // ============================================================
-
-    reg [15:0] InstructionRegister;
-
-    always @(posedge clk or posedge reset) begin
-        if (reset)
-            InstructionRegister <= 16'b0;
-        else if (InstructionRegisterEnable)
-            InstructionRegister <= BramReadValue;
-    end
-
-    // Select between the BRAM output and the stored instruction.
-    assign Instruction = InstructionRegisterMultiplexorControl ? InstructionRegister : BramReadValue;
 
     // ============================================================
     // Internal Wires: Instruction, Memory, and Datapath
@@ -50,7 +80,6 @@ module cpu #(
     // ALU status flags
     wire [4:0] FlagsRegister;
 
-
     // ============================================================
     // CPU Control Signals: FSM Outputs
     // ============================================================
@@ -66,14 +95,6 @@ module cpu #(
     wire ALUMultiplexorControl;
     wire LoadStoreMultiplexorControl;
     wire BramWriteEnable;
-
-
-    // ============================================================
-    // BRAM Address Multiplexer
-    // Selects the address for instruction fetches or data access.
-    // ============================================================
-
-    assign BramAddress = LoadStoreMultiplexorControl ? Rb : PCout;
 
     // ============================================================
     // BRAM: Instruction and Data Memory
@@ -116,7 +137,22 @@ module cpu #(
         .Rb(Rb),
         .clk(clk),
         .reset(reset),
-		  .R15Out(R15Out)
+		  .debugR0(debugR0),
+		  .debugR1(debugR1),
+		  .debugR2(debugR2),
+		  .debugR3(debugR3),
+		  .debugR4(debugR4),
+		  .debugR5(debugR5),
+		  .debugR6(debugR6),
+		  .debugR7(debugR7),
+		  .debugR8(debugR8),
+		  .debugR9(debugR9),
+		  .debugR10(debugR10),
+		  .debugR11(debugR11),
+		  .debugR12(debugR12),
+		  .debugR13(debugR13),
+		  .debugR14(debugR14),
+		  .debugR15(debugR15)
     );
 
     // ============================================================
@@ -160,5 +196,58 @@ module cpu #(
         .reset(reset),
         .PCout(PCout)
     );
+	 
+	 // ============================================================
+    // BRAM Address Multiplexer
+    // Selects the address for instruction fetches or data access.
+    // ============================================================
+
+    assign BramAddress = LoadStoreMultiplexorControl ? Rb : PCout;
+	 
+	 // ============================================================
+    // Instruction Register
+    // Stores the current instruction fetched from BRAM.
+    // ============================================================
+
+    reg [15:0] InstructionRegister;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            InstructionRegister <= 16'b0;
+        else if (InstructionRegisterEnable)
+            InstructionRegister <= BramReadValue;
+    end
+	 
+	 // Select between the BRAM output and the stored instruction.
+    assign Instruction = InstructionRegisterMultiplexorControl ? InstructionRegister : BramReadValue;
+	 
+	 // Instruction fetch and program counter
+    assign debugPCout = PCout;
+    assign debugBramAddress = BramAddress;
+    assign debugBramReadValue = BramReadValue;
+    assign debugInstruction = Instruction;
+    assign debugInstructionRegister = InstructionRegister;
+
+    // Instruction decoder
+    assign debugOpcode = Opcode;
+    assign debugImmediate = Immediate;
+    assign debugRsrc = Rsrc;
+    assign debugRdest = Rdest;
+
+    // Datapath
+    assign debugRa = Ra;
+    assign debugRb = Rb;
+    assign debugRegisterEnables = RegisterEnables;
+    assign debugFlagsRegister = FlagsRegister;
+
+    // FSM control signals
+    assign debugPCEnable = PCEnable;
+    assign debugPCMultiplexorControl = PCMultiplexorControl;
+    assign debugInstructionRegisterEnable = InstructionRegisterEnable;
+    assign debugInstructionRegisterMultiplexorControl = InstructionRegisterMultiplexorControl;
+    assign debugImmediateMultiplexorControl = ImmediateMutiplexorControl;
+    assign debugALUMultiplexorControl = ALUMultiplexorControl;
+    assign debugLoadStoreMultiplexorControl = LoadStoreMultiplexorControl;
+    assign debugBramWriteEnable = BramWriteEnable;
 
 endmodule
