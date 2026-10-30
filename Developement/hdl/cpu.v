@@ -92,8 +92,8 @@ module cpu #(
     // Instruction fields
     wire [7:0] Opcode;
     wire [7:0] Immediate;
-    wire [3:0] Rsrc;
-    wire [3:0] Rdest;
+    wire [3:0] AMultiplexorControl;
+    wire [3:0] BMultiplexorControl;
 
     // ALU status flags
     wire [4:0] FlagsRegister;
@@ -142,8 +142,8 @@ module cpu #(
     // ============================================================
 
     datapath datapath (
-        .selectA(Rsrc),
-        .selectB(Rdest),
+        .selectA(AMultiplexorControl),
+        .selectB(BMultiplexorControl),
         .RegisterEnables(RegisterEnables),
         .ImmediateMutiplexorControl(ImmediateMutiplexorControl),
         .ALUMultiplexorControl(ALUMultiplexorControl),
@@ -203,8 +203,8 @@ module cpu #(
 			.ALUMultiplexorControl(ALUMultiplexorControl),
 			.LoadStoreMultiplexorControl(LoadStoreMultiplexorControl),
 
-			.Rdest(Rdest),
-			.Rsrc(Rsrc),
+			.AMultiplexorControl(AMultiplexorControl),
+			.BMultiplexorControl(BMultiplexorControl),
 			.Opcode(Opcode),
 			.Immediate(Immediate),
 
@@ -266,8 +266,8 @@ module cpu #(
     // Instruction decoder
     assign debugOpcode = Opcode;
     assign debugImmediate = Immediate;
-    assign debugRsrc = Rsrc;
-    assign debugRdest = Rdest;
+    assign debugRsrc = AMultiplexorControl;
+    assign debugRdest = BMultiplexorControl;
 
     // Datapath
     assign debugRa = Ra;

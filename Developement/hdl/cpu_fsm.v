@@ -23,8 +23,8 @@ module cpu_fsm (
     output reg         LoadStoreMultiplexorControl,  // Selects a data-memory address instead of the PC
 
     // Instruction fields passed to the datapath
-    output reg  [3:0]  Rdest,    // Destination register index
-    output reg  [3:0]  Rsrc,     // Source register index
+	 output reg  [3:0]  AMultiplexorControl,     // Operand A Multiplexor Select
+    output reg  [3:0]  BMultiplexorControl,    // Operand B Multiplexor Select
     output wire [7:0]  Opcode,   // Decoded operation code
     output wire [7:0]  Immediate, // Immediate value or branch displacement
 	 
@@ -228,8 +228,8 @@ module cpu_fsm (
         // These fields are irrelevant unless the active state uses them.
         // X values may help simulation expose accidental use, but use
         // 0 instead if your project requires deterministic control values.
-        Rdest = 4'bxxxx;
-        Rsrc  = 4'bxxxx;
+        BMultiplexorControl = 4'bxxxx;
+        AMultiplexorControl  = 4'bxxxx;
 
         case (CurrentState)
 
@@ -264,8 +264,8 @@ module cpu_fsm (
                 RegisterEnables = 16'b1 << Instruction[11:8];
 
                 // Pass the register indices to the datapath.
-                Rdest = Instruction[11:8];
-                Rsrc  = Instruction[3:0];
+					 AMultiplexorControl  = Instruction[3:0];
+                BMultiplexorControl = Instruction[11:8];
             end
 				
             // ----------------------------------------------------
@@ -283,8 +283,8 @@ module cpu_fsm (
                 ImmediateMutiplexorControl = ImmediateInstruction;
 
                 // Pass the register indices to the datapath.
-                Rdest = Instruction[11:8];
-					 Rsrc  = Instruction[11:8];
+					 AMultiplexorControl  = Instruction[11:8];
+                BMultiplexorControl = Instruction[11:8];
             end
 
             // ----------------------------------------------------
@@ -301,8 +301,8 @@ module cpu_fsm (
                 LoadStoreMultiplexorControl = 1'b1;
 
                 // Select the registers needed by the store operation.
-                Rdest = Instruction[11:8];
-                Rsrc  = Instruction[3:0];
+					 AMultiplexorControl  = Instruction[3:0];
+                BMultiplexorControl = Instruction[11:8];
             end
 
             // ----------------------------------------------------
@@ -321,8 +321,8 @@ module cpu_fsm (
                 InstructionRegisterEnable = 1'b1;
 
                 // Provide the registers involved in the load operation.
-                Rdest = Instruction[11:8];
-                Rsrc  = Instruction[3:0];
+					 AMultiplexorControl  = Instruction[3:0];
+                BMultiplexorControl = Instruction[11:8];
             end
 
             // ----------------------------------------------------

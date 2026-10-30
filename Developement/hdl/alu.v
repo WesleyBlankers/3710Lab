@@ -225,6 +225,10 @@ module alu (
 				MOV: begin
 					C = A;
 				end
+				
+				MOVI: begin
+					C = B;
+				end
 
             // =================================================
             // DEFAULT
