@@ -1,10 +1,53 @@
-// Memory initialization assignmnents for bram.
-// NOTE: All @N indices require hexadecimal format. As shown below.
-0000000000000000   		// This is address 0. 	Value = 0.
-0000000000000001   		// This is address 1. 	Value = 1.
-@25 0000000000100101   	// This is address 37. 	Value = 37.
-@26 0000000000100110   	// This is address 38. 	Value = 38.
-@3FD 0000000000001111	// This is address 1021. 	Value = 15.
-@3FE 0000000000011111	// This is address 1022. 	Value = 31.
-@3FF 0000000000111111	// This is address 1023. 	Value = 63.
+// Memory initialization assignments for BRAM.
+// NOTE: All @N indices require hexadecimal format.
+// Address 0–15, values 0–15.
 
+1101_0000_0010_1000 // MOVI R0, 40; 		R0 = 40 Using this register to hold RAddress
+// Begin Load Instructions
+0100_0001_0000_0000 // LOAD R1, R0;        R1 = 1;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 41
+0100_0010_0000_0000 // LOAD R2, R0;        R2 = 2;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 42
+0100_0011_0000_0000 // LOAD R3, R0;        R3 = 3;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 43
+0100_0100_0000_0000 // LOAD R4, R0;        R4 = 4;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 44
+0100_0101_0000_0000 // LOAD R5, R0;        R5 = 5;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 45
+0100_0110_0000_0000 // LOAD R6, R0;        R6 = 6;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 46
+0100_0111_0000_0000 // LOAD R7, R0;        R7 = 7;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 47
+0100_1000_0000_0000 // LOAD R8, R0;        R8 = 8;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 48
+0100_1001_0000_0000 // LOAD R9, R0;        R9 = 9;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 49
+0100_1010_0000_0000 // LOAD R10, R0;       R10 = 10;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 50
+0100_1011_0000_0000 // LOAD R11, R0;       R11 = 11;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 51
+0100_1100_0000_0000 // LOAD R12, R0;       R12 = 12;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 52
+0100_1101_0000_0000 // LOAD R13, R0;       R13 = 13;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 53
+0100_1110_0000_0000 // LOAD R14, R0;       R14 = 14;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 54
+0100_1111_0000_0000 // LOAD R15, R0;       R15 = 15;
+0110_0000_0000_0001 // ADDUI 1, R0;        R0 = 55
+
+@28 // Jump to address 40.
+0000_0000_0000_0001    // Address 40.  Value = 1.
+0000_0000_0000_0010    // Address 41.  Value = 2.
+0000_0000_0000_0011    // Address 42.  Value = 3.
+0000_0000_0000_0100    // Address 43.  Value = 4.
+0000_0000_0000_0101    // Address 44.  Value = 5.
+0000_0000_0000_0110    // Address 45.  Value = 6.
+0000_0000_0000_0111    // Address 46.  Value = 7.
+0000_0000_0000_1000    // Address 47.  Value = 8.
+0000_0000_0000_1001    // Address 48.  Value = 9.
+0000_0000_0000_1010    // Address 49.  Value = 10.
+0000_0000_0000_1011    // Address 50.  Value = 11.
+0000_0000_0000_1100    // Address 51.  Value = 12.
+0000_0000_0000_1101    // Address 52.  Value = 13.
+0000_0000_0000_1110    // Address 53.  Value = 14.
+0000_0000_0000_1111    // Address 54.  Value = 15.

@@ -284,7 +284,6 @@ module cpu_fsm (
 
                 // Pass the register indices to the datapath.
 					 AMultiplexorControl  = Instruction[11:8];
-                BMultiplexorControl = Instruction[11:8];
             end
 
             // ----------------------------------------------------
@@ -301,8 +300,8 @@ module cpu_fsm (
                 LoadStoreMultiplexorControl = 1'b1;
 
                 // Select the registers needed by the store operation.
-					 AMultiplexorControl  = Instruction[3:0];
-                BMultiplexorControl = Instruction[11:8];
+					 AMultiplexorControl  = Instruction[11:8];
+                BMultiplexorControl = Instruction[3:0];
             end
 
             // ----------------------------------------------------
@@ -319,10 +318,11 @@ module cpu_fsm (
                 // Control whether memory data or the saved instruction
                 // is presented to the instruction-decoding logic.
                 InstructionRegisterEnable = 1'b1;
+					 InstructionRegisterMultiplexorControl = 1'b1;
 
                 // Provide the registers involved in the load operation.
-					 AMultiplexorControl  = Instruction[3:0];
-                BMultiplexorControl = Instruction[11:8];
+					 AMultiplexorControl  = Instruction[11:0];
+                BMultiplexorControl = Instruction[3:0];
             end
 
             // ----------------------------------------------------

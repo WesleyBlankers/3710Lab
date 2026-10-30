@@ -15,7 +15,7 @@ module cpu_questaDebugger_tb;
     cpu #(
         .ADDR_WIDTH(10),
         .DATA_WIDTH(16),
-        .MEM_FILE("../../../src/RI_Type_Instructions.mem")
+        .MEM_FILE("../../../src/Multiple_Type_Instructions.mem")
     ) uut (
         .clk(clk),
         .reset(reset)

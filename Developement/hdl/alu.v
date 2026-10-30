@@ -181,10 +181,10 @@ module alu (
             // =================================================
 
             LSH, LSHI: begin
-                if ($signed(B) < 0)
-						C = A >> (-$signed(B));
+                if ($signed(B[4:0]) < 0)
+						C = A >> (-$signed(B[4:0]));
 					 else
-					   C = A << B;
+					   C = A << B[3:0];
 						
 					//Zero Flag
 					if ( C == 16'b0)
@@ -194,10 +194,10 @@ module alu (
             end
 
             ALSH: begin
-                if ($signed(B) < 0)
-						C = $signed(A) >>> (-$signed(B));
+                if ($signed(B[4:0]) < 0)
+						C = $signed(A) >>> (-$signed(B[4:0]));
 					 else
-						C = $signed(A) <<< $signed(B);
+						C = $signed(A) <<< $signed(B[4:0]);
 						
 					//Zero Flag
 					if ( C == 16'b0)

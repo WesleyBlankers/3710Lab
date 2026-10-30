@@ -28,8 +28,7 @@ always @(*) begin
             CMP, CMPU,
             AND, OR, XOR, NOT,
             MOV,
-            LSH, ALSH,
-            WAIT, NOP:
+            LSH, ALSH:
                 Rtype = 1'b1;
 
             // =========================================

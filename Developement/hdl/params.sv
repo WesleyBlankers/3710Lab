@@ -60,9 +60,9 @@ parameter MOVI   = 8'b1101_XXXX;
 parameter LUI    = 8'b1111_XXXX;
 
 // Shift
-parameter LSH    = 8'b1000_0100;//
+parameter LSH    = 8'b1000_010X;//
 parameter LSHI   = 8'b1000_000X;//
-parameter ALSH   = 8'b1000_0110;
+parameter ALSH   = 8'b1000_011X;
 parameter ASHUI  = 8'b1000_001X;
 
 // Memory
