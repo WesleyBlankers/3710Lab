@@ -8,16 +8,7 @@ module alu (
 
     // Outputs
     output reg  [15:0] C,
-    output reg  [4:0]  Flags,
-
-    // Debug outputs
-    output wire [15:0] debugAluA,
-    output wire [15:0] debugAluB,
-    output wire        debugAluCin,
-    output wire [7:0]  debugAluOpcode,
-    output wire [15:0] debugAluResult,
-    output wire [4:0]  debugAluFlags,
-    output wire        debugAluReset
+    output reg  [4:0]  Flags
 );
 
 
@@ -41,10 +32,9 @@ module alu (
     // Normal ALU operation
     else begin
 	 
-        // Default values
-        C     = 16'b0;
+	     C     = 16'b0;
         Flags = 5'b0;
-
+	 
         casex (Opcode)
 
             // =================================================
@@ -235,22 +225,10 @@ module alu (
             // =================================================
 
             default: begin
-                C     = 16'b0;
-                Flags = 5'b0;
+				
             end
         endcase
     end
 end
-
-				// ============================================================
-				// ALU DEBUG SIGNALS
-				// ============================================================
-				assign debugAluA      = A;
-				assign debugAluB      = B;
-				assign debugAluCin    = Cin;
-				assign debugAluOpcode = Opcode;
-				assign debugAluResult = C;
-				assign debugAluFlags  = Flags;
-				assign debugAluReset  = reset;
 
 endmodule

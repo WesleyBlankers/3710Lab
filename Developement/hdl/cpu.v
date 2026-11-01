@@ -5,72 +5,7 @@ module cpu #(
     parameter MEM_FILE   = "../src/bram.mem"
 )(
 		input wire clk,
-		input wire reset,
-
-		// Existing debug output
-		output wire [15:0] debugR0,
-		output wire [15:0] debugR1,
-		output wire [15:0] debugR2,
-		output wire [15:0] debugR3,
-		output wire [15:0] debugR4,
-		output wire [15:0] debugR5,
-		output wire [15:0] debugR6,
-		output wire [15:0] debugR7,
-		output wire [15:0] debugR8,
-		output wire [15:0] debugR9,
-		output wire [15:0] debugR10,
-		output wire [15:0] debugR11,
-		output wire [15:0] debugR12,
-		output wire [15:0] debugR13,
-		output wire [15:0] debugR14,
-		output wire [15:0] debugR15,
-
-		// Instruction fetch and program counter
-		output wire [15:0] debugPCout,
-		output wire [15:0] debugBramAddress,
-		output wire [15:0] debugBramReadValue,
-		output wire [15:0] debugInstruction,
-		output wire [15:0] debugInstructionRegister,
-
-		// Instruction decoder
-		output wire [7:0] debugOpcode,
-		output wire [7:0] debugImmediate,
-		output wire [3:0] debugRsrc,
-		output wire [3:0] debugRdest,
-
-		// Datapath
-		output wire [15:0] debugRa,
-		output wire [15:0] debugRb,
-		output wire [15:0] debugRegisterEnables,
-		output wire [15:0] debugALUBus,
-		output wire [4:0]  debugFlagsRegister,
-		
-		// ALU
-		output wire [15:0] debugAluA,
-		output wire [15:0] debugAluB,
-		output wire        debugAluCin,
-		output wire [7:0]  debugAluOpcode,
-		output wire [15:0] debugAluResult,
-		output wire [4:0]  debugAluFlags,
-		output wire        debugAluReset,
-
-		// FSM control signals
-		output wire debugPCEnable,
-		output wire debugPCMultiplexorControl,
-		output wire debugInstructionRegisterEnable,
-		output wire debugInstructionRegisterMultiplexorControl,
-		output wire debugImmediateMultiplexorControl,
-		output wire debugALUMultiplexorControl,
-		output wire debugLoadStoreMultiplexorControl,
-		output wire debugBramWriteEnable,
-		output wire       debugRegisterInstruction,
-		output wire       debugImmediateInstruction,
-		output wire       debugStoreInstruction,
-		output wire       debugLoadInstruction,
-		output wire       debugBranchInstruction,
-		output wire       debugConditionMet,
-		output wire [2:0] debugCurrentState,
-		output wire [2:0] debugNextState
+		input wire reset
 );
 
     // ============================================================
@@ -83,7 +18,7 @@ module cpu #(
     wire [15:0] BramAddress;
 
     // Program counter
-    wire [15:0] PCout;
+    wire [15:0] PCOut;
 
     // Register file data outputs
     wire [15:0] Ra;
@@ -105,7 +40,8 @@ module cpu #(
     wire [15:0] RegisterEnables;
 
     wire PCEnable;
-    wire PCMultiplexorControl;
+    wire PCImmediateMultiplexorControl;
+	 wire PCTargetMultiplexorControl;
     wire InstructionRegisterEnable;
 	 wire InstructionRegisterMultiplexorControl;
 
@@ -154,31 +90,7 @@ module cpu #(
         .Ra(Ra),
         .Rb(Rb),
         .clk(clk),
-        .reset(reset),
-		  .debugALUBus(debugALUBus),
-		  .debugR0(debugR0),
-		  .debugR1(debugR1),
-		  .debugR2(debugR2),
-		  .debugR3(debugR3),
-		  .debugR4(debugR4),
-		  .debugR5(debugR5),
-		  .debugR6(debugR6),
-		  .debugR7(debugR7),
-		  .debugR8(debugR8),
-		  .debugR9(debugR9),
-		  .debugR10(debugR10),
-		  .debugR11(debugR11),
-		  .debugR12(debugR12),
-		  .debugR13(debugR13),
-		  .debugR14(debugR14),
-		  .debugR15(debugR15),
-		  .debugAluA(debugAluA),
-		  .debugAluB(debugAluB),
-		  .debugAluCin(debugAluCin),
-		  .debugAluOpcode(debugAluOpcode),
-		  .debugAluResult(debugAluResult),
-		  .debugAluFlags(debugAluFlags),
-		  .debugAluReset(debugAluReset)
+        .reset(reset)
     );
 
     // ============================================================
@@ -194,7 +106,8 @@ module cpu #(
 			.FlagsRegister(FlagsRegister),
 
 			.PCEnable(PCEnable),
-			.PCMultiplexorControl(PCMultiplexorControl),
+			.PCImmediateMultiplexorControl(PCImmediateMultiplexorControl),
+			.PCTargetMultiplexorControl(PCTargetMultiplexorControl),
 			.InstructionRegisterEnable(InstructionRegisterEnable),
 			.InstructionRegisterMultiplexorControl(InstructionRegisterMultiplexorControl),
 			.RegisterEnables(RegisterEnables),
@@ -206,16 +119,7 @@ module cpu #(
 			.AMultiplexorControl(AMultiplexorControl),
 			.BMultiplexorControl(BMultiplexorControl),
 			.Opcode(Opcode),
-			.Immediate(Immediate),
-
-			.debugRegisterInstruction(debugRegisterInstruction),
-			.debugImmediateInstruction(debugImmediateInstruction),
-			.debugStoreInstruction(debugStoreInstruction),
-			.debugLoadInstruction(debugLoadInstruction),
-			.debugBranchInstruction(debugBranchInstruction),
-			.debugConditionMet(debugConditionMet),
-			.debugCurrentState(debugCurrentState),
-			.debugNextState(debugNextState)
+			.Immediate(Immediate)
  );
 
     // ============================================================
@@ -225,11 +129,13 @@ module cpu #(
 
     pc pc (
         .PCEnable(PCEnable),
-        .PCMultiplexorControl(PCMultiplexorControl),
+        .PCImmediateMultiplexorControl(PCImmediateMultiplexorControl),
+		  .PCTargetMultiplexorControl(PCTargetMultiplexorControl),
+		  .PCTarget(Rb),
         .Immediate(Immediate),
         .clk(clk),
         .reset(reset),
-        .PCout(PCout)
+        .PCOut(PCOut)
     );
 	 
 	 // ============================================================
@@ -237,7 +143,7 @@ module cpu #(
     // Selects the address for instruction fetches or data access.
     // ============================================================
 
-    assign BramAddress = LoadStoreMultiplexorControl ? Rb : PCout;
+    assign BramAddress = LoadStoreMultiplexorControl ? Rb : PCOut;
 	 
 	 // ============================================================
     // Instruction Register
@@ -255,34 +161,5 @@ module cpu #(
 	 
 	 // Select between the BRAM output and the stored instruction.
     assign Instruction = InstructionRegisterMultiplexorControl ? InstructionRegister : BramReadValue;
-	 
-	 // Instruction fetch and program counter
-    assign debugPCout = PCout;
-    assign debugBramAddress = BramAddress;
-    assign debugBramReadValue = BramReadValue;
-    assign debugInstruction = Instruction;
-    assign debugInstructionRegister = InstructionRegister;
-
-    // Instruction decoder
-    assign debugOpcode = Opcode;
-    assign debugImmediate = Immediate;
-    assign debugRsrc = AMultiplexorControl;
-    assign debugRdest = BMultiplexorControl;
-
-    // Datapath
-    assign debugRa = Ra;
-    assign debugRb = Rb;
-    assign debugRegisterEnables = RegisterEnables;
-    assign debugFlagsRegister = FlagsRegister;
-
-    // FSM control signals
-    assign debugPCEnable = PCEnable;
-    assign debugPCMultiplexorControl = PCMultiplexorControl;
-    assign debugInstructionRegisterEnable = InstructionRegisterEnable;
-    assign debugInstructionRegisterMultiplexorControl = InstructionRegisterMultiplexorControl;
-    assign debugImmediateMultiplexorControl = ImmediateMutiplexorControl;
-    assign debugALUMultiplexorControl = ALUMultiplexorControl;
-    assign debugLoadStoreMultiplexorControl = LoadStoreMultiplexorControl;
-    assign debugBramWriteEnable = BramWriteEnable;
 
 endmodule

@@ -6,37 +6,28 @@ module cpu_fsm (
     input  wire [4:0]  FlagsRegister,  // ALU status flags: C, L, F, Z, N
 
     // Program counter control
-    output reg         PCEnable,                    // Enables the PC to update
-    output reg         PCMultiplexorControl,         // Selects PC increment or branch displacement
-
+    output reg         PCEnable,                    		// Enables the PC to update
+    output reg         PCImmediateMultiplexorControl,		// Selects PC branch displacement
+    output reg         PCTargetMultiplexorControl,		   // Selects PC jump
+	 
     // Instruction register control
-    output reg         InstructionRegisterEnable,   // Enables the instruction register to capture memory data
+    output reg         InstructionRegisterEnable,   		// Enables the instruction register to capture memory data
     output reg         InstructionRegisterMultiplexorControl, // Selects which instruction source is used
 
     // Register file and datapath control
-    output reg  [15:0] RegisterEnables,              // One-hot register write enables
-    output reg         ImmediateMutiplexorControl,   // Selects immediate or register operand
-    output reg         ALUMultiplexorControl,        // Selects the appropriate ALU result/data source
+    output reg  [15:0] RegisterEnables,              		// One-hot register write enables
+    output reg         ImmediateMutiplexorControl,   		// Selects immediate or register operand
+    output reg         ALUMultiplexorControl,        		// Selects the appropriate ALU result/data source
 
     // Memory control
-    output reg         BramWriteEnable,              // Enables a BRAM write
-    output reg         LoadStoreMultiplexorControl,  // Selects a data-memory address instead of the PC
+    output reg         BramWriteEnable,              		// Enables a BRAM write
+    output reg         LoadStoreMultiplexorControl,  		// Selects a data-memory address instead of the PC
 
     // Instruction fields passed to the datapath
-	 output reg  [3:0]  AMultiplexorControl,     // Operand A Multiplexor Select
-    output reg  [3:0]  BMultiplexorControl,    // Operand B Multiplexor Select
-    output wire [7:0]  Opcode,   // Decoded operation code
-    output wire [7:0]  Immediate, // Immediate value or branch displacement
-	 
-	 // Debug Wires
-	 output wire debugRegisterInstruction,
-	 output wire debugImmediateInstruction,
-	 output wire debugStoreInstruction,
-	 output wire debugLoadInstruction,
-	 output wire debugBranchInstruction,
-	 output wire debugConditionMet,
-	 output wire [2:0] debugCurrentState,
-	 output wire [2:0] debugNextState
+	 output reg  [3:0]  AMultiplexorControl,    			   // Operand A Multiplexor Select
+    output reg  [3:0]  BMultiplexorControl,    				// Operand B Multiplexor Select
+    output wire [7:0]  Opcode,   								// Decoded operation code
+    output wire [7:0]  Immediate 								// Immediate value or branch displacement
 );
 
     // ------------------------------------------------------------
@@ -50,11 +41,12 @@ module cpu_fsm (
     wire StoreInstruction;
     wire LoadInstruction;
     wire BranchInstruction;
+	 wire JumpInstruction;
 	 
 	 // CurrentState stores the active state.
     // NextState is calculated by the combinational next-state logic.
-    reg [2:0] CurrentState;
-    reg [2:0] NextState;
+    reg [3:0] CurrentState;
+    reg [3:0] NextState;
 
     // Indicates whether the current conditional branch should be taken.
     reg ConditionMet;
@@ -74,7 +66,8 @@ module cpu_fsm (
         .Itype  (ImmediateInstruction),
         .Stype  (StoreInstruction),
         .Ltype  (LoadInstruction),
-        .BJtype (BranchInstruction)
+        .Btype  (BranchInstruction),
+		  .Jtype	 (JumpInstruction)
     );
 
     // ------------------------------------------------------------
@@ -82,14 +75,15 @@ module cpu_fsm (
     // ------------------------------------------------------------
 
     // Three bits are sufficient to represent the seven states.
-    localparam FETCH   = 3'd0;  // Fetch instruction from memory
-    localparam DECODE  = 3'd1;  // Determine instruction type
-    localparam R_TYPE  = 3'd2;  // Execute register operation
-	 localparam I_TYPE  = 3'd3;  // Execute immediate operation
-    localparam STORE   = 3'd4;  // Write data to memory
-    localparam LOAD_1  = 3'd5;  // Initiate memory read for a load
-    localparam LOAD_2  = 3'd6;  // Write loaded data into a register
-    localparam BRANCH  = 3'd7;  // Evaluate and execute a branch
+    localparam FETCH   = 4'd0;  // Fetch instruction from memory
+    localparam DECODE  = 4'd1;  // Determine instruction type
+    localparam R_TYPE  = 4'd2;  // Execute register operation
+	 localparam I_TYPE  = 4'd3;  // Execute immediate operation
+    localparam STORE   = 4'd4;  // Write data to memory
+    localparam LOAD_1  = 4'd5;  // Initiate memory read for a load
+    localparam LOAD_2  = 4'd6;  // Write loaded data into a register
+    localparam BRANCH  = 4'd7;  // Evaluate and execute a branch
+	 localparam JUMP	  = 4'd8;  // Execute Jump instruction
 
     // ------------------------------------------------------------
     // Branch-condition evaluation
@@ -166,6 +160,8 @@ module cpu_fsm (
                     NextState = LOAD_1;
                 else if (BranchInstruction)
                     NextState = BRANCH;
+				    else if (JumpInstruction)
+						  NextState = JUMP;
                 else
                     NextState = FETCH;  // Unsupported instruction
             end
@@ -199,6 +195,11 @@ module cpu_fsm (
             BRANCH: begin
                 NextState = FETCH;
             end
+				
+				// Jump execution completes and returns to instruction fetch.
+				JUMP: begin
+					 NextState = FETCH;
+				end
 
             // Recover from an invalid state.
             default: begin
@@ -216,7 +217,8 @@ module cpu_fsm (
     // This prevents unintended latches in combinational logic.
     always @(CurrentState) begin
         PCEnable                            		= 1'b0;
-        PCMultiplexorControl                		= 1'b0;
+        PCImmediateMultiplexorControl           = 1'b0;
+		  PCTargetMultiplexorControl					= 1'b0;
         InstructionRegisterEnable          	 	= 1'b0;
         InstructionRegisterMultiplexorControl 	= 1'b0;
         RegisterEnables                      	= 16'b0;
@@ -348,7 +350,22 @@ module cpu_fsm (
                 PCEnable = ConditionMet;
 
                 // Select the branch-displacement path in the PC logic.
-                PCMultiplexorControl = 1'b1;
+                PCImmediateMultiplexorControl = 1'b1;
+					 
+					 RegisterEnables = 16'b0;
+            end
+				
+				// ----------------------------------------------------
+            // JUMP: conditionally jump the PC
+            // ----------------------------------------------------
+            JUMP: begin
+                // Jump to the PC only if the decoded condition is satisfied.
+                PCEnable = ConditionMet;
+					 
+                // Select the jump-displacement path in the PC logic.
+                PCTargetMultiplexorControl = 1'b1;
+					 BMultiplexorControl = Instruction[3:0];
+					 RegisterEnables = 16'b0;
             end
 
             // ----------------------------------------------------
@@ -359,14 +376,5 @@ module cpu_fsm (
             end
         endcase
     end
-	 
-		assign debugRegisterInstruction 	= RegisterInstruction;
-		assign debugImmediateInstruction = ImmediateInstruction;
-		assign debugStoreInstruction     = StoreInstruction;
-		assign debugLoadInstruction      = LoadInstruction;
-		assign debugBranchInstruction    = BranchInstruction;
-		assign debugConditionMet         = ConditionMet;
-		assign debugCurrentState         = CurrentState;
-		assign debugNextState            = NextState;
 
 endmodule

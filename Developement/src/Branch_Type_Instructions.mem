@@ -1,10 +1,59 @@
-// Memory initialization assignmnents for bram.
-// NOTE: All @N indices require hexadecimal format. As shown below.
-0000000000000000   		// This is address 0. 	Value = 0.
-0000000000000001   		// This is address 1. 	Value = 1.
-@25 0000000000100101   	// This is address 37. 	Value = 37.
-@26 0000000000100110   	// This is address 38. 	Value = 38.
-@3FD 0000000000001111	// This is address 1021. 	Value = 15.
-@3FE 0000000000011111	// This is address 1022. 	Value = 31.
-@3FF 0000000000111111	// This is address 1023. 	Value = 63.
+// Flags:
+// Flags[4] = C (Carry)
+// Flags[3] = L (Less-than unsigned)
+// Flags[2] = F (Overflow)
+// Flags[1] = Z (Zero)
+// Flags[0] = N (Negative / less-than signed)
+
+// Initialize R0 - R4.
+
+// R0 already intitializes to 0
+1101_0001_0000_0001 // MOVI R1, 1; 		R1 = 1
+1101_0010_0000_0010 // MOVI R2, 2; 		R2 = 2
+1101_0011_0000_0011 // MOVI R3, 3; 		R3 = 3
+1101_0100_0000_0100 // MOVI R4, 4; 		R4 = 4
+
+1101_1111_1100_1000 // MOVI R15, 200; 		R15 = 200
+
+0100_1110_1100_1111 // JCond R15; Unconditional Jump to Address 200.
+
+@C8 // Address 200
+0000_0101_1101_0001 // MOV R1, R5; 		R5 = 1
+0000_0110_1101_0010 // MOV R2, R6; 		R6 = 2
+0000_0111_1101_0011 // MOV R3, R7; 		R7 = 3
+0000_1000_1101_0100 // MOV R4, R8; 		R8 = 4
+1101_1111_0011_0010 // MOVI R15, 50; 		R15 = 50
+0000_0001_1011_0001 // CMP R1, R1;		FLAGS [00010]
+0100_0000_1100_1111 // JCond R15; IF EQUAL - Jump to Address 50.
+
+@32 // Address 50
+1101_1001_1111_1111 // MOVI R9, 255; 		R9 = 255
+1000_1001_0000_1000 // LSHI 8, R9;		R9 = 65280
+0110_1001_1111_1111 // ADDUI 255, R9;		R9 = 65535
+0110_1001_0000_0001 // ADDUI 1, R9;		R9 = 0, FLAGS [10100]
+1101_1111_1000_0000 // MOVI R15, 128; 		R15 = 128
+0100_1000_1100_1111 // JCond R15; IF OVERFLOW - Jump to Address 128.
+
+@80 // Address 128
+// R0 Initializes to 0
+// Here we will start a loop that adds 100 to R11 as long as R0 is not equal to R10,
+// Adding 1 to R0.
+1101_1010_0000_1010 // MOVI R10, 10; 		R10 = 10
+
+0110_1011_0110_0100 // ADDUI 100, R11;		R11 = 100
+0110_0000_0000_0001 // ADDUI 1, R0;		R0 = 1
+0000_0000_1011_1010 // CMP R0, R10;
+1100_0001_1111_1100 // BCond -3; IF NOT EQUAL - Branch to Address 129
+
+// R11 = 1000.
+
+
+
+
+
+
+
+
+
+
 

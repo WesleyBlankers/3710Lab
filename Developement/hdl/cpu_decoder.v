@@ -4,7 +4,8 @@ module cpu_decoder (
     output reg        Itype,
     output reg        Stype,
     output reg        Ltype,
-    output reg        BJtype
+    output reg        Btype,
+	 output reg			 Jtype
 );
 
 `include "params.sv"
@@ -16,7 +17,8 @@ always @(*) begin
     Itype  = 1'b0;
     Stype  = 1'b0;
     Ltype  = 1'b0;
-    BJtype = 1'b0;
+    Btype  = 1'b0;
+	 Jtype  = 1'b0;
 
         casex (Opcode)
 
@@ -55,10 +57,16 @@ always @(*) begin
                 Ltype = 1'b1;
 
             // =========================================
-            // Branch / Jump instructions
+            // B-Type: Branch instructions
             // =========================================
-            SCOND, BCOND, JCOND, JAL, RETX, EXCP:
-                BJtype = 1'b1;
+            BCOND:
+                Btype = 1'b1;
+					 
+				// =========================================
+            // J-Type: Jump instructions
+            // =========================================
+            SCOND, JCOND, JAL, RETX, EXCP:
+                Jtype = 1'b1;
 
             // =========================================
             // Other system instructions
@@ -74,7 +82,9 @@ always @(*) begin
                 Itype  = 1'b0;
                 Stype  = 1'b0;
                 Ltype  = 1'b0;
-                BJtype = 1'b0;
+                Btype  = 1'b0;
+                Jtype  = 1'b0;
+
             end
 
         endcase
