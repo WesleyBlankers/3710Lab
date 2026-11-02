@@ -5,7 +5,9 @@ module cpu_decoder (
     output reg        Stype,
     output reg        Ltype,
     output reg        Btype,
-	 output reg			 Jtype
+	 output reg			 Jtype,
+	 output reg			 Ctype,
+	 output reg			 CItype
 );
 
 `include "params.sv"
@@ -19,6 +21,9 @@ always @(*) begin
     Ltype  = 1'b0;
     Btype  = 1'b0;
 	 Jtype  = 1'b0;
+	 Ctype  = 1'b0;
+	 CItype = 1'b0;
+
 
         casex (Opcode)
 
@@ -27,7 +32,6 @@ always @(*) begin
             // =========================================
             ADD, ADDU, ADDC, ADDCU,
             SUB, SUBC, MUL,
-            CMP, CMPU,
             AND, OR, XOR, NOT,
             MOV,
             LSH, ALSH:
@@ -38,12 +42,23 @@ always @(*) begin
             // =========================================
             ADDI, ADDUI, ADDCI, ADDCUI,
             SUBI, SUBCI, MULI,
-            CMPI, CMPUI,
             ANDI, ORI, XORI,
             MOVI, LUI,
             LSHI, ASHUI:
                 Itype = 1'b1;
-
+					 
+            // =========================================
+            // C-Type: Compare Instructions.
+            // =========================================
+				CMP, CMPU:
+					 Ctype = 1'b1;
+				
+            // =========================================
+            // CU-Type: ALU, logical, move, and shift
+            // =========================================
+				CMPI, CMPUI:
+					 CItype = 1'b1;
+				
             // =========================================
             // S-Type: Store instructions
             // =========================================
@@ -84,6 +99,8 @@ always @(*) begin
                 Ltype  = 1'b0;
                 Btype  = 1'b0;
                 Jtype  = 1'b0;
+					 Ctype  = 1'b0;
+					 CItype = 1'b0;
 
             end
 

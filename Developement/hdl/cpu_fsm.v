@@ -42,7 +42,9 @@ module cpu_fsm (
     wire LoadInstruction;
     wire BranchInstruction;
 	 wire JumpInstruction;
-	 
+	 wire CompareInstruction;
+	 wire CompareImmediateInstruction;
+
 	 // CurrentState stores the active state.
     // NextState is calculated by the combinational next-state logic.
     reg [3:0] CurrentState;
@@ -67,7 +69,9 @@ module cpu_fsm (
         .Stype  (StoreInstruction),
         .Ltype  (LoadInstruction),
         .Btype  (BranchInstruction),
-		  .Jtype	 (JumpInstruction)
+		  .Jtype	 (JumpInstruction),
+		  .Ctype	 (CompareInstruction),
+		  .CItype (CompareImmediateInstruction)
     );
 
     // ------------------------------------------------------------
@@ -79,11 +83,13 @@ module cpu_fsm (
     localparam DECODE  = 4'd1;  // Determine instruction type
     localparam R_TYPE  = 4'd2;  // Execute register operation
 	 localparam I_TYPE  = 4'd3;  // Execute immediate operation
-    localparam STORE   = 4'd4;  // Write data to memory
-    localparam LOAD_1  = 4'd5;  // Initiate memory read for a load
-    localparam LOAD_2  = 4'd6;  // Write loaded data into a register
-    localparam BRANCH  = 4'd7;  // Evaluate and execute a branch
-	 localparam JUMP	  = 4'd8;  // Execute Jump instruction
+	 localparam C_TYPE  = 4'd4;  // Execute Compare Operation
+	 localparam CI_TYPE = 4'd5;  // Execute Compare Immediate Operation
+    localparam STORE   = 4'd6;  // Write data to memory
+    localparam LOAD_1  = 4'd7;  // Initiate memory read for a load
+    localparam LOAD_2  = 4'd8;  // Write loaded data into a register
+    localparam BRANCH  = 4'd9;  // Evaluate and execute a branch
+	 localparam JUMP	  = 4'd10;  // Execute Jump instruction
 
     // ------------------------------------------------------------
     // Branch-condition evaluation
@@ -98,8 +104,13 @@ module cpu_fsm (
     //
     // Instruction[11:8] selects the branch condition.
     // Verify these condition definitions against the ISA specification.
-    always @(*) begin
-        case (Instruction[11:8])
+	 task EvaluateCondition;
+    input [3:0] Condition;
+    input [4:0] FlagRegister;
+    output reg  ConditionMet;
+
+    begin
+        case (Condition)
             4'h0: ConditionMet =  FlagsRegister[1];                 		// EQ: Equal, Z = 1
             4'h1: ConditionMet = ~FlagsRegister[1];                 		// NE: Not Equal, Z = 0
             4'h2: ConditionMet =  FlagsRegister[4];                 		// CS: Carry Set, C = 1 
@@ -114,10 +125,11 @@ module cpu_fsm (
             4'hB: ConditionMet =  FlagsRegister[3] | FlagsRegister[1];  // HS: Higher than or Same as, L = 0 or Z = 1
             4'hC: ConditionMet = ~FlagsRegister[0] & ~FlagsRegister[1]; // LT: Less than, N = 0 and Z = 0
             4'hD: ConditionMet =  FlagsRegister[0] | FlagsRegister[1];  // GE: Greater than or Equal, N = 1 or Z = 1
-            4'hE: ConditionMet = 1'b1;                             		// UC: Unconditional
+            4'hE: ConditionMet = 1'b1;                                  // UC: Unconditional Jump
             default: ConditionMet = 1'b0;
         endcase
-    end
+		end
+	 endtask
 
     // ------------------------------------------------------------
     // State register
@@ -150,10 +162,15 @@ module cpu_fsm (
 
             // Identify the instruction class and choose its execution path.
             DECODE: begin
+				EvaluateCondition(Instruction[11:8], FlagsRegister, ConditionMet);
                 if (RegisterInstruction)
                     NextState = R_TYPE;
 					 else if (ImmediateInstruction)
 						  NextState = I_TYPE;
+				    else if (CompareInstruction)
+						  NextState = C_TYPE;
+				    else if (CompareImmediateInstruction)
+						  NextState = CI_TYPE;
                 else if (StoreInstruction)
                     NextState = STORE;
                 else if (LoadInstruction)
@@ -173,6 +190,16 @@ module cpu_fsm (
 				
 				// Immediate operation.
             I_TYPE: begin
+                NextState = FETCH;
+            end
+
+				// Compare operation.
+            C_TYPE: begin
+                NextState = FETCH;
+            end
+				
+				// Compare Immediate operation.
+            CI_TYPE: begin
                 NextState = FETCH;
             end
 
@@ -228,8 +255,6 @@ module cpu_fsm (
         LoadStoreMultiplexorControl          	= 1'b0;
 
         // These fields are irrelevant unless the active state uses them.
-        // X values may help simulation expose accidental use, but use
-        // 0 instead if your project requires deterministic control values.
         BMultiplexorControl = 4'bxxxx;
         AMultiplexorControl  = 4'bxxxx;
 
@@ -255,7 +280,7 @@ module cpu_fsm (
             end
 
             // ----------------------------------------------------
-            // RI_TYPE: register operation
+            // R_TYPE: register operation
             // ----------------------------------------------------
             R_TYPE: begin
                 // Advance the PC after executing the instruction.
@@ -282,6 +307,32 @@ module cpu_fsm (
                 RegisterEnables = 16'b1 << Instruction[11:8];
 
                 // Select the immediate operand for immediate instructions.
+                ImmediateMutiplexorControl = ImmediateInstruction;
+
+                // Pass the register indices to the datapath.
+					 AMultiplexorControl  = Instruction[11:8];
+            end
+				
+            // ----------------------------------------------------
+            // C_TYPE: Compare operation
+            // ----------------------------------------------------
+            C_TYPE: begin
+                // Advance the PC after executing the instruction.
+                PCEnable = 1'b1;
+
+                // Pass the register indices to the datapath.
+					 AMultiplexorControl  = Instruction[11:8];
+                BMultiplexorControl = Instruction[3:0];
+            end
+				
+				// ----------------------------------------------------
+            // CI_TYPE: Compare immediate operation
+            // ----------------------------------------------------
+            CI_TYPE: begin
+                // Advance the PC after executing the instruction.
+                PCEnable = 1'b1;
+					 
+					 // Select the immediate operand for immediate instructions.
                 ImmediateMutiplexorControl = ImmediateInstruction;
 
                 // Pass the register indices to the datapath.
@@ -351,8 +402,6 @@ module cpu_fsm (
 
                 // Select the branch-displacement path in the PC logic.
                 PCImmediateMultiplexorControl = 1'b1;
-					 
-					 RegisterEnables = 16'b0;
             end
 				
 				// ----------------------------------------------------
@@ -365,7 +414,7 @@ module cpu_fsm (
                 // Select the jump-displacement path in the PC logic.
                 PCTargetMultiplexorControl = 1'b1;
 					 BMultiplexorControl = Instruction[3:0];
-					 RegisterEnables = 16'b0;
+					 
             end
 
             // ----------------------------------------------------

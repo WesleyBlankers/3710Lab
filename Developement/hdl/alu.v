@@ -55,11 +55,12 @@ module alu (
 						Flags[2] = 1'b1;
 					 else
 						Flags[2] = 1'b0;
-					 
             end
 
             ADDU, ADDUI: begin
                 {Flags[4], C} = A + B;
+					 
+					 Flags[2] = Flags[4];
 
 					//Zero Flag
 					if ( C == 16'b0)
