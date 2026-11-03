@@ -32,6 +32,7 @@ module cpu #(
 
     // ALU status flags
     wire [4:0] FlagsRegister;
+	 wire FlagsRegisterEnable;
 
     // ============================================================
     // CPU Control Signals: FSM Outputs
@@ -87,6 +88,7 @@ module cpu #(
         .Immediate(Immediate),
         .Opcode(Opcode),
         .FlagsRegister(FlagsRegister),
+		  .FlagsRegisterEnable(FlagsRegisterEnable),
         .Ra(Ra),
         .Rb(Rb),
         .clk(clk),
@@ -104,6 +106,7 @@ module cpu #(
 
 			.Instruction(Instruction),
 			.FlagsRegister(FlagsRegister),
+			.FlagsRegisterEnable(FlagsRegisterEnable),
 
 			.PCEnable(PCEnable),
 			.PCImmediateMultiplexorControl(PCImmediateMultiplexorControl),

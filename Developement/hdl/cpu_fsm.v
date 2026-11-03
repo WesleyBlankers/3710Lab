@@ -18,6 +18,7 @@ module cpu_fsm (
     output reg  [15:0] RegisterEnables,              		// One-hot register write enables
     output reg         ImmediateMutiplexorControl,   		// Selects immediate or register operand
     output reg         ALUMultiplexorControl,        		// Selects the appropriate ALU result/data source
+	 output reg			  FlagsRegisterEnable,					// Enables FlagRegister updates.
 
     // Memory control
     output reg         BramWriteEnable,              		// Enables a BRAM write
@@ -253,6 +254,7 @@ module cpu_fsm (
         BramWriteEnable                      	= 1'b0;
         ALUMultiplexorControl                	= 1'b0;
         LoadStoreMultiplexorControl          	= 1'b0;
+		  FlagsRegisterEnable	= 1'b0;
 
         // These fields are irrelevant unless the active state uses them.
         BMultiplexorControl = 4'bxxxx;
@@ -293,6 +295,9 @@ module cpu_fsm (
                 // Pass the register indices to the datapath.
 					 AMultiplexorControl  = Instruction[3:0];
                 BMultiplexorControl = Instruction[11:8];
+					 
+					 // Enable FlagRegister Updates
+					 FlagsRegisterEnable = 1'b1;
             end
 				
             // ----------------------------------------------------
@@ -311,6 +316,9 @@ module cpu_fsm (
 
                 // Pass the register indices to the datapath.
 					 AMultiplexorControl  = Instruction[11:8];
+					 
+					 // Enable FlagRegister Updates
+					 FlagsRegisterEnable = 1'b1;
             end
 				
             // ----------------------------------------------------
@@ -323,6 +331,9 @@ module cpu_fsm (
                 // Pass the register indices to the datapath.
 					 AMultiplexorControl  = Instruction[11:8];
                 BMultiplexorControl = Instruction[3:0];
+					 
+					 // Enable FlagRegister Updates
+					 FlagsRegisterEnable = 1'b1;
             end
 				
 				// ----------------------------------------------------
@@ -337,6 +348,9 @@ module cpu_fsm (
 
                 // Pass the register indices to the datapath.
 					 AMultiplexorControl  = Instruction[11:8];
+					 
+					 // Enable FlagRegister Updates
+					 FlagsRegisterEnable = 1'b1;
             end
 
             // ----------------------------------------------------

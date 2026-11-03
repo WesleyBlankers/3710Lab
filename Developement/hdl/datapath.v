@@ -4,6 +4,7 @@ module datapath(
 
     input  wire [15:0] RegisterEnables,
     input  wire        ImmediateMutiplexorControl,
+	 input  wire		  FlagsRegisterEnable,
 	 input  wire		  ALUMultiplexorControl,
 	 input  wire [15:0] BramReadValue,
 
@@ -153,30 +154,10 @@ module datapath(
     // Immediate/Register Selection
     // ============================================================
 	 
-   /*
-   wire [15:0] ExtendedImmediate;
-
-	// Extend the immediate in both ways.
-	assign ZeroExtendedImmediate = {8'b0, Immediate};
-	assign SignExtendedImmediate = {{8{Immediate[7]}}, Immediate};
-
-	// Select extension type based on opcode.
-	assign ExtendedImmediate =
-		 (Opcode == ADDI  	||
-		  Opcode == ADDCI  	||
-		  Opcode == SUBI  	||
-		  Opcode == SUBCI  	||
-		  Opcode == MULI  	||
-		  Opcode == CMPI
-       ) ? SignExtendedImmediate : ZeroExtendedImmediate;
-
-	 */
-	 
 	 // Select immediate or register operand.
     assign ALUA = selectedA;
     assign ALUB = ImmediateMutiplexorControl ? Immediate : selectedB;
 	 assign Cin = FlagsRegister[4];
-
 
     // ============================================================
     // ALU
@@ -206,6 +187,7 @@ module datapath(
     flagReg flag_register (
         .ALUFlags(ALUFlags),
         .FlagsOut(FlagsRegister),
+		  .FlagsRegisterEnable(FlagsRegisterEnable),
         .clk(clk),
         .reset(reset)
     );
