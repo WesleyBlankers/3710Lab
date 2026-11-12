@@ -25,7 +25,7 @@ OPCODESMSB = {
 # Arithmetic & Logic (Reg-Reg & Immediate)
     "ADD":   0b0000,
     "ADDU":  0b0000,
-    "ADDC":  0b0000,
+    "ADDC":  0b0000,8
     "ADDCU": "xxxx",  # Not specified in ISA
     "SUB":   0b0000,
     "SUBC":  0b0000,
