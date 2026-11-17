@@ -10,7 +10,7 @@ close all;
 % --- Option B: synthetic colour test arrow (default) ------------------------
 N = 33;                                          % must be odd
 % img = makeColorArrow(N);
-img = imread('PlayerGlyph.png');
+img = imread('TestPlayer71x71.png');
 
 [H,W,P] = size(img);
 assert(mod(H,2)==1 && mod(W,2)==1, 'Image height and width must both be odd.');

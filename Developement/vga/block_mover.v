@@ -28,7 +28,7 @@ module block_mover (
 				block_x_offset <= 0;
 		  end   
         else if (tick) begin
-            if (block_x_offset < 400) begin
+            if (block_x_offset < 640) begin
                 block_x_offset <= block_x_offset + 1;
 				end
             else begin
