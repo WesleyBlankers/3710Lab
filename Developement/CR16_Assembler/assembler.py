@@ -25,7 +25,7 @@ OPCODESMSB = {
 # Arithmetic & Logic (Reg-Reg & Immediate)
     "ADD":   0b0000,
     "ADDU":  0b0000,
-    "ADDC":  0b0000,8
+    "ADDC":  0b0000,
     "ADDCU": "xxxx",  # Not specified in ISA
     "SUB":   0b0000,
     "SUBC":  0b0000,
@@ -142,7 +142,12 @@ OPCODESLSB = {
     "EI":    0b0111, 
 
 }
-
+COND_CODES = {
+            "EQ": 0b0000, "NE": 0b0001, "CS": 0b0010, "CC": 0b0011,
+            "HI": 0b0100, "LS": 0b0101, "GT": 0b0110, "LE": 0b0111,
+            "FS": 0b1000, "FC": 0b1001, "LO": 0b1010, "HS": 0b1011,
+            "LT": 0b1100, "GE": 0b1101, "UC": 0b1110, "NEVER": 0b1111
+        }
 #parses the registers in an instructions to their corresponding binary values ex: R4 -> 0100
 def parse_register(reg_str):
     clean = reg_str.strip(",").upper()
@@ -166,7 +171,7 @@ def assemble_line(line_num, line_text):
     lsb = OPCODESLSB[mnemonic]
 
     # --- PATTERN A: Register-to-Register Instructions ---
-    if isinstance(lsb, int) and mnemonic not in ["LSHI", "ASHUI"]: 
+    if mnemonic in ["ADD", "ADDU", "ADDC", "SUB", "SUBC", "MUL", "AND", "OR", "XOR", "MOV", "LSH", "ALSH", "CMP"]:
         rsrc = parse_register(parts[1])
         rdest = parse_register(parts[2])
         machine_code = (msb << 12) | (rdest << 8) | (lsb << 4) | rsrc
@@ -182,6 +187,58 @@ def assemble_line(line_num, line_text):
         
         machine_code = (msb << 12) | (rdest << 8) | (imm_hi << 4) | imm_lo
 
+    # --- PATTERN C: Load / Store Instructions ---
+    elif mnemonic in ["LOAD", "STOR"]:
+        raddr = parse_register(parts[1])
+        reg_val = parse_register(parts[2])
+        machine_code = (msb << 12) | (raddr << 8) | (lsb << 4) | reg_val
+
+    # --- PATTERN D: Branch Conditional Instructions ---
+    elif mnemonic in ["BCOND","Bcond"]:
+        cond_str = parts[1].upper()
+        disp_val = int(parts[2])
+        
+        if cond_str not in COND_CODES:
+            raise ValueError(f"Line {line_num}: Unknown condition code '{cond_str}'")
+            
+        cond_bits = COND_CODES[cond_str]
+        
+        # 8-bit two's complement displacement
+        disp_byte = disp_val & 0xFF
+        disp_hi = (disp_byte >> 4) & 0x0F
+        disp_lo = disp_byte & 0x0F
+        
+        machine_code = (msb << 12) | (cond_bits << 8) | (disp_hi << 4) | disp_lo
+
+        # --- PATTERN E: [J-Type] Jump, Control & Special Instructions (SCOND, JCOND, JAL, RETX, EXCP) ---
+    elif mnemonic == "JCOND":
+        cond_str = parts[1].upper()
+        rtarget = parse_register(parts[2])
+        if cond_str not in COND_CODES:
+            raise ValueError(f"Line {line_num}: Unknown condition code '{cond_str}'")
+        cond_bits = COND_CODES[cond_str]
+        machine_code = (msb << 12) | (cond_bits << 8) | (lsb << 4) | rtarget
+
+    elif mnemonic == "SCOND":
+        cond_str = parts[1].upper()
+        rdest = parse_register(parts[2])
+        if cond_str not in COND_CODES:
+            raise ValueError(f"Line {line_num}: Unknown condition code '{cond_str}'")
+        cond_bits = COND_CODES[cond_str]
+        machine_code = (msb << 12) | (rdest << 8) | (lsb << 4) | cond_bits
+
+    elif mnemonic == "JAL":
+        rlink = parse_register(parts[1])
+        rtarget = parse_register(parts[2])
+        machine_code = (msb << 12) | (rlink << 8) | (lsb << 4) | rtarget
+
+    elif mnemonic == "EXCP":
+        vector_val = int(parts[1])
+        vector_bits = vector_val & 0x0F
+        machine_code = (msb << 12) | (lsb << 4) | vector_bits
+
+    elif mnemonic == "RETX":
+        machine_code = (msb << 12) | (lsb << 4)
     else:
         raise ValueError(f"Line {line_num}: Instruction format for '{mnemonic}' needs a custom handler.")
 

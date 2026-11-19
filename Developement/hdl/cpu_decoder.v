@@ -34,7 +34,7 @@ always @(*) begin
             SUB, SUBC, MUL,
             AND, OR, XOR, NOT,
             MOV,
-            LSH, ALSH:
+            LSH, ALSH:  		//Should this be ASHU? ALSH isn't in the ISA. 
                 Rtype = 1'b1;
 
             // =========================================
