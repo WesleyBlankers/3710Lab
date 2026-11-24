@@ -35,7 +35,6 @@ output_files/
 *.map
 *.asm
 *.pof
-*.sof
 
 # ------------------------------------------------------------
 # NativeLink / simulator generated files
